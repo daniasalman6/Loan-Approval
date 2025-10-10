@@ -31,4 +31,7 @@ loan_df <- data.frame(read.csv("loan_approval_dataset.csv"))
 str(loan_df)
 ```
 
+```{r}
+nrow(loan_df)
+```
 
