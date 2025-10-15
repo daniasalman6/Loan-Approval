@@ -25,10 +25,38 @@ options(scientific=T, digits = 3)
 # use scipen=999 to prevent scientific notation at all times
 ```
 
-### Loading the Dataset
-```{r p1, echo=TRUE}
+## Loading the Dataset
+```{r read_dataset, echo=TRUE}
+# reading dataset
 loan_df <- data.frame(read.csv("loan_approval_dataset.csv"))
-str(loan_df)
 ```
 
+```{r explore_dataset, echo=TRUE}
+# exploring dataset
+str(loan_df)
+head(loan_df)
+```
 
+## Data Cleaning & Summary
+
+### subsetting data and converting categorical variables to factor
+```{r data_cleaning, echo=TRUE}
+loan_df <- subset(loan_df, select = -c(loan_id))
+
+# converting the numeric variables to factor variables
+loan_df$no_of_dependents = as.factor(loan_df$no_of_dependents)
+loan_df$education = as.factor(loan_df$education)
+loan_df$self_employed = as.factor(loan_df$self_employed)
+loan_df$loan_status = as.factor(loan_df$loan_status)
+str(loan_df)
+```
+### Finding NA values
+```{r, echo=TRUE}
+sum(is.na(loan_df))
+```
+There are no NA values in the data set
+
+### Summary of the dataset
+```{r echo=TRUE}
+summary(loan_df)
+```
