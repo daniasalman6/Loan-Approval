@@ -18,8 +18,8 @@ output:
 # some of common options (and the defaults) are: 
 # include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
 library(ezids)
-# knitr::opts_chunk$set(warning = F, results = "markup", message = F)
-knitr::opts_chunk$set(warning = F, results="hide", message = F)
+knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+# knitr::opts_chunk$set(warning = F, results="hide", message = F)
 #knitr::opts_chunk$set(warning = F, message = F)
 options(scientific=T, digits = 3) 
 # options(scipen=9, digits = 3) 
@@ -89,3 +89,59 @@ str(loan_df)
 summary(loan_df)
 ```
 After filtering out the rows with negative values, the dataset now has `4,241 observations`. The distributions across all variables look almost identical to before, showing that this cleaning step didn’t affect the data overall.
+
+## Exploratory Data Analysis
+
+### Does education level affect loan approval?
+```{r Q1, echo=TRUE}
+
+```
+
+### Do people with higher asset values tend to get approved more often?
+```{r Q8, echo=TRUE}
+
+```
+
+### Is there a significant difference in average income between approved and rejected applicants?
+```{r Q3, echo=TRUE}
+
+```
+
+### Is there a correlation between applicant's annual income and loan amount requested?
+```{r Q4, echo=TRUE}
+
+```
+
+### Is there a significant difference in average CIBIL scores between approved and rejected applicants?
+```{r Q5, echo=TRUE}
+
+```
+
+### For rejected loans, is there a significant difference in the mean CIBIL score between applicants with shorter loan term loans (<=10 years) versus longer term loans(>10 years)?
+```{r Q6, echo=TRUE}
+
+```
+
+### Is there a correlation between the CIBIL Score and the Loan Term among those whose loans are approved?  
+```{r Q7, echo=TRUE}
+
+```
+
+### Does self-employment status affect loan approval?
+```{r Q2, echo=TRUE}
+
+```
+
+### Does the number of dependents affect approval of loans?
+```{r Q9, echo=TRUE}
+
+```
+
+### Does requested loan term affect approval?
+```{r Q10, echo=TRUE}
+
+```
+
+
+
+
