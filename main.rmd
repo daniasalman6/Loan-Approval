@@ -115,17 +115,49 @@ After filtering out the rows with negative values, the dataset now has `4,241 ob
 ### Is there a significant difference in average CIBIL scores between approved and rejected applicants?
 ```{r Q5, echo=TRUE}
 
+#t-test
+t.test(cibil_score ~ loan_status, data = loan_df)
+
+#box chart
+library(ggplot2)
+ggplot(loan_df, aes(x = loan_status, y = cibil_score, fill = loan_status)) +
+  geom_boxplot() +
+  labs(title = "CIBIL Score Distribution by Loan Status", x = "Loan Status", y = "CIBIL Score")
+
 ```
+
+There is a significant difference in CIBIL scores between approved and rejected applicants because the p-value, 2e-16, is much lower than the standard alpha threshold of 0.05. This allows us to reject the null hypothesis that the two means of approved and rejected applicants are equal.
 
 ### For rejected loans, is there a significant difference in the mean CIBIL score between applicants with shorter loan term loans (<=10 years) versus longer term loans(>10 years)?
 ```{r Q6, echo=TRUE}
 
+#created subsets for shorter and longer loans then ran t-test
+rejected_shorter <- subset(loan_df, trimws(loan_status) == "Rejected" & loan_term <= 10)
+rejected_longer <- subset(loan_df, trimws(loan_status) == "Rejected" & loan_term > 10)
+
+t.test(rejected_shorter$cibil_score, rejected_longer$cibil_score)
+
+#boxplot
+boxplot(rejected_shorter$cibil_score, rejected_longer$cibil_score, names = c("Shorter (<= 10 yrs)", "Longer (> 10 yrs)"), main = "CIBIL Score Distribution for Rejected Loans", ylab = "CIBIL Score", xlab = "Loan Term Group")
 ```
+
+There is not a significant difference in CIBIL scores between shorter (<= 10 years) and longer (>10 years) term loans within the regected group of applicants because the p-value, 1, is much higher than the standard alpha threshold of 0.05. This allows us to accept the null hypothesis that the two means of shorter and longer term loans of rejected applicants are equal.
 
 ### Is there a correlation between the CIBIL Score and the Loan Term among those whose loans are approved?  
 ```{r Q7, echo=TRUE}
 
+#correlation coefficient
+corr_r <- cor(loan_df[trimws(loan_df$loan_status) == "Approved", "cibil_score"], loan_df[trimws(loan_df$loan_status) == "Approved", "loan_term"], method = "pearson")
+
+#correlation test
+cor.test(loan_df[trimws(loan_df$loan_status) == "Approved", "cibil_score"], loan_df[trimws(loan_df$loan_status) == "Approved", "loan_term"], method = "pearson")
+
+#scatter plot
+ggplot(subset(loan_df, trimws(loan_status) == "Approved"), aes(x = loan_term, y = cibil_score)) + geom_point(alpha = 0.4, color = "blue") + geom_smooth(method = "lm", se = FALSE, color = "red") + labs(title = "CIBIL Score vs. Loan Term for Approved Loans", x = "Loan Term (Years)", y = "CIBIL Score")
+
 ```
+
+The correlation coefficient of 0.21 shows a weak but positive relationship where approved candidates with higher CIBIL scores have a slightly higher tendency to approved for longer loan terms. And the p-value is very small, 2e-16, meaning that the correlation coefficient is unlikely due to chance.
 
 ### Does self-employment status affect loan approval?
 ```{r Q8, echo=TRUE}
