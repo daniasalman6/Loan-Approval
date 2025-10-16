@@ -18,8 +18,8 @@ output:
 # some of common options (and the defaults) are: 
 # include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
 library(ezids)
-knitr::opts_chunk$set(warning = F, results = "markup", message = F)
-# knitr::opts_chunk$set(warning = F, results="hide", message = F)
+# knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+knitr::opts_chunk$set(warning = F, results="hide", message = F)
 #knitr::opts_chunk$set(warning = F, message = F)
 options(scientific=T, digits = 3) 
 # options(scipen=9, digits = 3) 
@@ -98,7 +98,7 @@ After filtering out the rows with negative values, the dataset now has `4,241 ob
 ```
 
 ### Do people with higher asset values tend to get approved more often?
-```{r Q8, echo=TRUE}
+```{r Q2, echo=TRUE}
 
 ```
 
@@ -128,7 +128,7 @@ After filtering out the rows with negative values, the dataset now has `4,241 ob
 ```
 
 ### Does self-employment status affect loan approval?
-```{r Q2, echo=TRUE}
+```{r Q8, echo=TRUE}
 
 ```
 

@@ -1591,20 +1591,6 @@ Liu</h4>
 loan_df &lt;- data.frame(read.csv(&quot;loan_approval_dataset.csv&quot;))</code></pre>
 <pre class="r"><code># exploring dataset
 str(loan_df)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    4269 obs. of  13 variables:
-##  $ loan_id                 : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ no_of_dependents        : int  2 0 3 3 5 0 5 2 0 5 ...
-##  $ education               : chr  &quot; Graduate&quot; &quot; Not Graduate&quot; &quot; Graduate&quot; &quot; Graduate&quot; ...
-##  $ self_employed           : chr  &quot; No&quot; &quot; Yes&quot; &quot; No&quot; &quot; No&quot; ...
-##  $ income_annum            : int  9600000 4100000 9100000 8200000 9800000 4800000 8700000 5700000 800000 1100000 ...
-##  $ loan_amount             : int  29900000 12200000 29700000 30700000 24200000 13500000 33000000 15000000 2200000 4300000 ...
-##  $ loan_term               : int  12 8 20 8 20 10 4 20 20 10 ...
-##  $ cibil_score             : int  778 417 506 467 382 319 678 382 782 388 ...
-##  $ residential_assets_value: int  2400000 2700000 7100000 18200000 12400000 6800000 22500000 13200000 1300000 3200000 ...
-##  $ commercial_assets_value : int  17600000 2200000 4500000 3300000 8200000 8300000 14800000 5700000 800000 1400000 ...
-##  $ luxury_assets_value     : int  22700000 8800000 33300000 23300000 29400000 13700000 29200000 11800000 2800000 3300000 ...
-##  $ bank_asset_value        : int  8000000 3300000 12800000 7900000 5000000 5100000 4300000 6000000 600000 1600000 ...
-##  $ loan_status             : chr  &quot; Approved&quot; &quot; Rejected&quot; &quot; Rejected&quot; &quot; Rejected&quot; ...</code></pre>
 <p>The dataset has <strong>4269 observations</strong> with <strong>13
 variables</strong></p>
 </div>
@@ -1624,19 +1610,6 @@ loan_df$education = as.factor(loan_df$education)
 loan_df$self_employed = as.factor(loan_df$self_employed)
 loan_df$loan_status = as.factor(loan_df$loan_status)
 str(loan_df)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    4269 obs. of  12 variables:
-##  $ no_of_dependents        : Factor w/ 6 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,..: 3 1 4 4 6 1 6 3 1 6 ...
-##  $ education               : Factor w/ 2 levels &quot; Graduate&quot;,&quot; Not Graduate&quot;: 1 2 1 1 2 1 1 1 1 2 ...
-##  $ self_employed           : Factor w/ 2 levels &quot; No&quot;,&quot; Yes&quot;: 1 2 1 1 2 2 1 2 2 1 ...
-##  $ income_annum            : int  9600000 4100000 9100000 8200000 9800000 4800000 8700000 5700000 800000 1100000 ...
-##  $ loan_amount             : int  29900000 12200000 29700000 30700000 24200000 13500000 33000000 15000000 2200000 4300000 ...
-##  $ loan_term               : int  12 8 20 8 20 10 4 20 20 10 ...
-##  $ cibil_score             : int  778 417 506 467 382 319 678 382 782 388 ...
-##  $ residential_assets_value: int  2400000 2700000 7100000 18200000 12400000 6800000 22500000 13200000 1300000 3200000 ...
-##  $ commercial_assets_value : int  17600000 2200000 4500000 3300000 8200000 8300000 14800000 5700000 800000 1400000 ...
-##  $ luxury_assets_value     : int  22700000 8800000 33300000 23300000 29400000 13700000 29200000 11800000 2800000 3300000 ...
-##  $ bank_asset_value        : int  8000000 3300000 12800000 7900000 5000000 5100000 4300000 6000000 600000 1600000 ...
-##  $ loan_status             : Factor w/ 2 levels &quot; Approved&quot;,&quot; Rejected&quot;: 1 2 2 2 2 2 1 2 1 2 ...</code></pre>
 <p>After conversion, the dataset contains four categorical
 variables:</p>
 <ul>
@@ -1658,40 +1631,11 @@ target variable (<code>2</code> categories: <code>Approved</code>,
 <div id="finding-na-values" class="section level3">
 <h3>Finding NA values</h3>
 <pre class="r"><code>sum(is.na(loan_df))</code></pre>
-<pre><code>## [1] 0</code></pre>
 <p>There are no NA values in the data set</p>
 </div>
 <div id="summary-of-the-dataset" class="section level3">
 <h3>Summary of the dataset</h3>
 <pre class="r"><code>summary(loan_df)</code></pre>
-<pre><code>##  no_of_dependents         education    self_employed  income_annum    
-##  0:712             Graduate    :2144    No :2119     Min.   : 200000  
-##  1:697             Not Graduate:2125    Yes:2150     1st Qu.:2700000  
-##  2:708                                               Median :5100000  
-##  3:727                                               Mean   :5059124  
-##  4:752                                               3rd Qu.:7500000  
-##  5:673                                               Max.   :9900000  
-##   loan_amount         loan_term     cibil_score  residential_assets_value
-##  Min.   :  300000   Min.   : 2.0   Min.   :300   Min.   : -100000        
-##  1st Qu.: 7700000   1st Qu.: 6.0   1st Qu.:453   1st Qu.: 2200000        
-##  Median :14500000   Median :10.0   Median :600   Median : 5600000        
-##  Mean   :15133450   Mean   :10.9   Mean   :600   Mean   : 7472617        
-##  3rd Qu.:21500000   3rd Qu.:16.0   3rd Qu.:748   3rd Qu.:11300000        
-##  Max.   :39500000   Max.   :20.0   Max.   :900   Max.   :29100000        
-##  commercial_assets_value luxury_assets_value bank_asset_value  
-##  Min.   :       0        Min.   :  300000    Min.   :       0  
-##  1st Qu.: 1300000        1st Qu.: 7500000    1st Qu.: 2300000  
-##  Median : 3700000        Median :14600000    Median : 4600000  
-##  Mean   : 4973155        Mean   :15126306    Mean   : 4976692  
-##  3rd Qu.: 7600000        3rd Qu.:21700000    3rd Qu.: 7100000  
-##  Max.   :19400000        Max.   :39200000    Max.   :14700000  
-##     loan_status  
-##   Approved:2656  
-##   Rejected:1613  
-##                  
-##                  
-##                  
-## </code></pre>
 <p>Overall, the dataset appears well-structured and balanced.
 <strong>Categorical variables</strong> such as <code>education</code>,
 <code>self_employment</code>, and <code>loan_status</code> show nearly
@@ -1710,55 +1654,13 @@ issues that will need correction before exploration or testing.</p>
 <p>Checking the number of rows that have negative values for
 <code>residential_assets_value</code> column</p>
 <pre class="r"><code>sum(loan_df$residential_assets_value &lt; 0)</code></pre>
-<pre><code>## [1] 28</code></pre>
 <p>There are <code>28</code> entries with negative values.</p>
 </div>
 <div id="removing-entries-with-negative-values" class="section level3">
 <h3>Removing entries with negative values</h3>
 <pre class="r"><code>loan_df &lt;- loan_df[loan_df$residential_assets_value &gt;= 0, ]
-str(loan_df)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    4241 obs. of  12 variables:
-##  $ no_of_dependents        : Factor w/ 6 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,..: 3 1 4 4 6 1 6 3 1 6 ...
-##  $ education               : Factor w/ 2 levels &quot; Graduate&quot;,&quot; Not Graduate&quot;: 1 2 1 1 2 1 1 1 1 2 ...
-##  $ self_employed           : Factor w/ 2 levels &quot; No&quot;,&quot; Yes&quot;: 1 2 1 1 2 2 1 2 2 1 ...
-##  $ income_annum            : int  9600000 4100000 9100000 8200000 9800000 4800000 8700000 5700000 800000 1100000 ...
-##  $ loan_amount             : int  29900000 12200000 29700000 30700000 24200000 13500000 33000000 15000000 2200000 4300000 ...
-##  $ loan_term               : int  12 8 20 8 20 10 4 20 20 10 ...
-##  $ cibil_score             : int  778 417 506 467 382 319 678 382 782 388 ...
-##  $ residential_assets_value: int  2400000 2700000 7100000 18200000 12400000 6800000 22500000 13200000 1300000 3200000 ...
-##  $ commercial_assets_value : int  17600000 2200000 4500000 3300000 8200000 8300000 14800000 5700000 800000 1400000 ...
-##  $ luxury_assets_value     : int  22700000 8800000 33300000 23300000 29400000 13700000 29200000 11800000 2800000 3300000 ...
-##  $ bank_asset_value        : int  8000000 3300000 12800000 7900000 5000000 5100000 4300000 6000000 600000 1600000 ...
-##  $ loan_status             : Factor w/ 2 levels &quot; Approved&quot;,&quot; Rejected&quot;: 1 2 2 2 2 2 1 2 1 2 ...</code></pre>
-<pre class="r"><code>summary(loan_df)</code></pre>
-<pre><code>##  no_of_dependents         education    self_employed  income_annum    
-##  0:706             Graduate    :2127    No :2106     Min.   : 200000  
-##  1:696             Not Graduate:2114    Yes:2135     1st Qu.:2700000  
-##  2:701                                               Median :5100000  
-##  3:725                                               Mean   :5074251  
-##  4:744                                               3rd Qu.:7500000  
-##  5:669                                               Max.   :9900000  
-##   loan_amount         loan_term     cibil_score  residential_assets_value
-##  Min.   :  300000   Min.   : 2.0   Min.   :300   Min.   :       0        
-##  1st Qu.: 7700000   1st Qu.: 6.0   1st Qu.:453   1st Qu.: 2200000        
-##  Median :14600000   Median :10.0   Median :600   Median : 5700000        
-##  Mean   :15178401   Mean   :10.9   Mean   :600   Mean   : 7522613        
-##  3rd Qu.:21500000   3rd Qu.:16.0   3rd Qu.:747   3rd Qu.:11400000        
-##  Max.   :39500000   Max.   :20.0   Max.   :900   Max.   :29100000        
-##  commercial_assets_value luxury_assets_value bank_asset_value  
-##  Min.   :       0        Min.   :  300000    Min.   :       0  
-##  1st Qu.: 1300000        1st Qu.: 7500000    1st Qu.: 2400000  
-##  Median : 3700000        Median :14600000    Median : 4600000  
-##  Mean   : 4985121        Mean   :15171210    Mean   : 4991488  
-##  3rd Qu.: 7700000        3rd Qu.:21700000    3rd Qu.: 7100000  
-##  Max.   :19400000        Max.   :39200000    Max.   :14700000  
-##     loan_status  
-##   Approved:2640  
-##   Rejected:1601  
-##                  
-##                  
-##                  
-## </code></pre>
+str(loan_df)
+summary(loan_df)</code></pre>
 <p>After filtering out the rows with negative values, the dataset now
 has <code>4,241 observations</code>. The distributions across all
 variables look almost identical to before, showing that this cleaning
