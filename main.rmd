@@ -19,8 +19,8 @@ output:
 # include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
 library(ezids)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
-knitr::opts_chunk$set(warning = F, results="hide", message = F)
-#knitr::opts_chunk$set(warning = F, message = F)
+#knitr::opts_chunk$set(warning = F, results="hide", message = F)
+knitr::opts_chunk$set(warning = F, message = F)
 options(scientific=T, digits = 3) 
 # options(scipen=9, digits = 3) 
 # ‘scipen’: integer. A penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferred unless it is more than ‘scipen’ digits wider.
@@ -191,22 +191,60 @@ The correlation coefficient of 0.21 shows a weak but positive relationship where
 
 ### Does self-employment status affect loan approval?
 ```{r Q8, echo=TRUE}
-
+ggplot(loan_df, aes(x = self_employed, fill = loan_status)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Loan Approval by Number of Dependents",
+    x = "Number of Dependents",
+    y = "Number of Applicants"
+  ) +
+  scale_fill_manual(values = c("Approved" = "#F2764E", Rejected = "#FAF487")) +
+  theme_minimal()
 ```
+Approval rates are nearly **identical** for self-employed and non self-employed applicants, suggesting self-employment likely doesn’t affect loan approval. A Chi-square test will confirm this statistically.
+
+```{r, echo=TRUE}
+contable <- table(loan_df$self_employed, loan_df$loan_status)
+chisq.test(contable)
+```
+The Chi-square test (`p = 1`) also shows no significant association between self-employment status and loan approval. This confirms that self-employment does not affect the likelihood of loan approval in this dataset.
 
 ### Does the number of dependents affect approval of loans?
 ```{r Q9, echo=TRUE}
-
+ggplot(loan_df, aes(x = no_of_dependents, fill = loan_status)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Loan Approval by Number of Dependents",
+    x = "Number of Dependents",
+    y = "Number of Applicants"
+  ) +
+  scale_fill_manual(values = c("Approved" = "#0D0942", "Rejected" = "#C4C0F6")) +
+  theme_minimal()
 ```
+The bar chart shows that approval and rejection counts are fairly similar across all dependent categories, with no noticeable trend suggesting that the number of dependents strongly influences loan approval outcomes. While minor variations exist, the approval rate appears consistent across groups, indicating that loan approval is likely independent of the number of dependents. A Chi-square test will confirm this statistically.
+
+```{r, echo=TRUE}
+contable <- table(loan_df$no_of_dependents, loan_df$loan_status)
+chisq.test(contable)
+```
+The Chi-square test (`p = 0.8`) also shows no significant association between no_of_dependents and loan approval. This confirms that no_of_dependents does not affect the likelihood of loan approval in this dataset.
 
 ### Does requested loan term affect approval?
 ```{r Q10, echo=TRUE}
-
+ggplot(loan_df, aes(x = loan_status, y = loan_term, fill = loan_status)) +
+  geom_boxplot(alpha = 0.6) +
+  labs(
+    title = "Loan Term by Loan Approval Status",
+    x = "Loan Status",
+    y = "Loan Term (Years)"
+  ) +
+  scale_fill_manual(values = c("Approved" = "#98C25F", "Rejected" = "#EB3BA7")) +
+  theme_minimal()
 ```
+The boxplot shows that approved loans have a **wider range** of terms, including very short loans, while rejected loans generally have longer terms. The median loan term for approved loans is `10 years`, compared to `12 years` for rejected loans, indicating that rejected loans tend to have slightly longer terms
 
 
-
-```{r}
-nrow(loan_df)
+```{r, echo=TRUE}
+t.test(loan_term ~ loan_status, data = loan_df)
 ```
-
+The two-sample t-test indicates a significant difference in means (`p < 0.05`), with approved loans having a shorter average term (`10.4 years`) than rejected loans (`11.7 years`). The `95%` confidence interval for the mean difference is `-1.69 to -1.01` (the interval doesn't have 0), confirming that approved loans tend to have shorter terms.
