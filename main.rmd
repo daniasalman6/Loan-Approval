@@ -114,18 +114,80 @@ After filtering out the rows with negative values, the dataset now has `4,241 ob
 
 ### Is there a significant difference in average CIBIL scores between approved and rejected applicants?
 ```{r Q5, echo=TRUE}
+library(ggplot2)
+#CIBIL score frequency distribution
+hist(loan_df$cibil_score, main = "Frequency Distribution of CIBIL Scores", xlab = "CIBIL Score", ylab = "Frequency", breaks = 15, col = "lightblue")
+
+#CIBIL score frequency distribution
+loan_df$loan_status <- factor(trimws(loan_df$loan_status))
+ggplot(loan_df, aes(x = cibil_score, fill = loan_status)) +
+  geom_histogram(binwidth = 50, color = "white", alpha = 0.8) +
+  facet_wrap(~ loan_status, scales = "free_y") +
+  labs(title = "CIBIL Score Distribution by Loan Status", x = "CIBIL Score", y = "Frequency", fill = "Loan Status") + scale_fill_manual(values = c("Approved" = "darkgreen", "Rejected" = "darkred"))
+
+#CIBIL score frequency box chart
+ggplot(loan_df, aes(x = loan_status, y = cibil_score, fill = loan_status)) +
+  geom_boxplot() +
+  labs(title = "CIBIL Score Distribution by Loan Status", x = "Loan Status", y = "CIBIL Score") +
+  scale_fill_manual(values = c("Approved" = "darkgreen", "Rejected" = "darkred"))
+
+#t-test
+t.test(cibil_score ~ loan_status, data = loan_df)
 
 ```
+The overall CIBIL score frequency distribution shows no apparent outliers. The individual distributions for approved and rejected loans show a few outliers, but it is not necessary to remove them. Even though the outliers are dragging the two means closer to each other, the means are still significantly different even when including them in the t-test.
+
+There is a significant difference in CIBIL scores between approved and rejected applicants because the p-value, 2e-16, is much lower than the standard alpha threshold of 0.05. This allows us to reject the null hypothesis that the two means of approved and rejected applicants are equal.
 
 ### For rejected loans, is there a significant difference in the mean CIBIL score between applicants with shorter loan term loans (<=10 years) versus longer term loans(>10 years)?
 ```{r Q6, echo=TRUE}
 
+#created subsets for shorter and longer loans then ran t-test
+rejected_shorter <- subset(loan_df, trimws(loan_status) == "Rejected" & loan_term <= 10)
+rejected_longer <- subset(loan_df, trimws(loan_status) == "Rejected" & loan_term > 10)
+
+#Overall loan term frequency distribution
+ggplot(loan_df, aes(x = factor(loan_term))) + geom_bar(fill = "lightblue") + labs(title = "Frequency Distribution of Loan Terms", x = "Loan Term (Years)", y = "Frequency")
+
+#boxplot
+boxplot(rejected_shorter$cibil_score, rejected_longer$cibil_score, names = c("Shorter (<= 10 yrs)", "Longer (> 10 yrs)"), main = "CIBIL Score Distribution for Rejected Loans", ylab = "CIBIL Score", xlab = "Loan Term Group")
+
+#removing outliers
+removeOutliers <- function(x) {Q1 <- quantile(x, 0.25)
+Q3 <- quantile(x, 0.75);
+IQR_val <- Q3 - Q1;
+lower_bound <- Q1 - (1.5 * IQR_val);
+upper_bound <- Q3 + (1.5 * IQR_val);
+  
+return(x[x >= lower_bound & x <= upper_bound]);}
+
+cleaned_shorter_cibil <- removeOutliers(rejected_shorter$cibil_score)
+cleaned_longer_cibil <- removeOutliers(rejected_longer$cibil_score)
+
+t.test(rejected_shorter$cibil_score, rejected_longer$cibil_score)
+t.test(cleaned_shorter_cibil, cleaned_longer_cibil)
+
 ```
+
+The overall loan terms frequency distribution shows no apparent outliers however there are a few in the shorter and longer loan term groups. Having this said, even when removing these outliers there no significant differences found between the two groups and their respective CIBIL scores.
+
+There is not a significant difference in CIBIL scores between shorter (<= 10 years) and longer (>10 years) term loans within the rejected group of applicants because the p-value, 1, is much higher than the standard alpha threshold of 0.05. This allows us to accept the null hypothesis that the two means of shorter and longer term loans of rejected applicants are equal.
 
 ### Is there a correlation between the CIBIL Score and the Loan Term among those whose loans are approved?  
 ```{r Q7, echo=TRUE}
 
+#correlation coefficient
+corr_r <- cor(loan_df[trimws(loan_df$loan_status) == "Approved", "cibil_score"], loan_df[trimws(loan_df$loan_status) == "Approved", "loan_term"], method = "pearson")
+
+#correlation test
+cor.test(loan_df[trimws(loan_df$loan_status) == "Approved", "cibil_score"], loan_df[trimws(loan_df$loan_status) == "Approved", "loan_term"], method = "pearson")
+
+#scatter plot
+ggplot(subset(loan_df, trimws(loan_status) == "Approved"), aes(x = loan_term, y = cibil_score)) + geom_point(alpha = 0.4, color = "blue") + geom_smooth(method = "lm", se = FALSE, color = "red") + labs(title = "CIBIL Score vs. Loan Term for Approved Loans", x = "Loan Term (Years)", y = "CIBIL Score")
+
 ```
+
+The correlation coefficient of 0.21 shows a weak but positive relationship where approved candidates with higher CIBIL scores have a slightly higher tendency to approved for longer loan terms. And the p-value is very small, 2e-16, meaning that the correlation coefficient is unlikely due to chance.
 
 ### Does self-employment status affect loan approval?
 ```{r Q8, echo=TRUE}
@@ -144,4 +206,7 @@ After filtering out the rows with negative values, the dataset now has `4,241 ob
 
 
 
+```{r}
+nrow(loan_df)
+```
 
