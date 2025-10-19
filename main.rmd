@@ -104,13 +104,97 @@ After filtering out the rows with negative values, the dataset now has `4,241 ob
 
 ### Is there a significant difference in average income between approved and rejected applicants?
 ```{r Q3, echo=TRUE}
+# Group by loan approval status and extract their annual income data
+approved_income <- loan_df$income_annum[loan_df$loan_status == " Approved"]
+rejected_income <- loan_df$income_annum[loan_df$loan_status == " Rejected"]
+# Calculate each group's mean annual income
+mean_approved <- mean(approved_income, na.rm = TRUE)
+mean_rejected <- mean(rejected_income, na.rm = TRUE)
+cat("Mean annual income of Approved group:", mean_approved, "\n")
+cat("Mean annual income of Rejected group:", mean_rejected, "\n")
+
+# Conduct hypothesis testing
+t_test_result <- t.test(approved_income, rejected_income)
+print("t-test result：")
+print(t_test_result)
+# Draw the histogram
+hist(approved_income, 
+     col = "lightgreen",
+     main = "The distribution of annual income", 
+     xlab = "Annual income", 
+     ylab = "Frequency",
+     breaks = 30)
+hist(rejected_income, 
+     col = "red", 
+     breaks = 30,
+     add = TRUE)
+legend("topright", 
+       legend = c("Approved", "Rejected"), 
+       fill = c("lightgreen", "red")) 
 
 ```
+The average income of the approved group is 5,025,904, and that of the rejected group is 5,113,825, with a difference of approximately 87,921. Then I did the hypothesis testing to do advanced judgment.
+
+H0: There is no significant difference in the average annual income between two groups.
+H1: There is a significant difference in the average annual income between two groups.
+
+According to the result of t-test:
+t-value: -1, indicating that the difference between the two group means is not prominent compared to the sample variation.
+p-value: 0.3 which is much larger than the significance level of 0.05, indicating that the different is non-significant.
+95% confidence interval: [-260,821, 84,978]. The interval contains 0, indicating that the mean difference between the two groups may be 0.
+Finally, I drew the histogram chart, the distribution of each group's annual income is uniform. Also enhanced the conclusion.
+
+All above suggests that income alone may not be a strong predictor of loan approval in this dataset.
+
+
 
 ### Is there a correlation between applicant's annual income and loan amount requested?
 ```{r Q4, echo=TRUE}
+annual_income <- loan_df$income_annum
+loan_amount <- loan_df$loan_amount
+
+# Check whether normal distribution
+shapiro_income <- shapiro.test(annual_income)
+shapiro_loan <- shapiro.test(loan_amount)
+cat("p-value of annual income：", shapiro_income$p.value, "\n")
+cat("p-value of loan amount：", shapiro_loan$p.value, "\n")
+# Choose the correlation coefficient
+if (shapiro_income$p.value > 0.05 & shapiro_loan$p.value > 0.05) {
+  cor_result <- cor.test(annual_income, loan_amount, method = "pearson")
+  cat("Pearson result：\n")
+} else {
+  cor_result <- cor.test(annual_income, loan_amount, method = "spearman")
+  cat("Spearman reslut：\n")
+}
+print(cor_result)
+
+# Draw the plot
+plot(
+  x = annual_income,
+  y = loan_amount,
+  main = "Annual Income vs. Loan Amount Requested",
+  xlab = "Annual Income",
+  ylab = "Loan Amount Requested",
+  pch = 16,
+  col = "lightblue",
+  cex = 0.8
+)
+# Add the regression line
+abline(lm(loan_amount ~ annual_income), col = "red", lwd = 2)
+legend("topleft", 
+       legend = "regression line", 
+       col = "red", 
+       lty = 1, 
+       lwd = 2)
+
+
+
 
 ```
+I checked whether the data of annual income and loan amount is follow the normal distribution and choose the Spearman  correlation coefficient according to the result.
+The rho is 0.941 which is close to 1, indicating that there is a very strong positive monotonic correlation between the annual income and loan amount exist and the p-value is far less than 0.05 also showed this correlation is very significant in statistic.
+Then according to the plot chart, it's very clear that the loan amount shows an obvious upward trend from the bottom left to the top right as annual income increases, and the red regression line further strengthens the visual evidence of this linear association, indicating a strong positive correlation tendency between the two.
+In short, this analysis clearly draws the conclusion that "annual income is a key factor affecting the loan application amount, and there is a strong positive correlation between the two."
 
 ### Is there a significant difference in average CIBIL scores between approved and rejected applicants?
 ```{r Q5, echo=TRUE}
