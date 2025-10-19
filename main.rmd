@@ -119,32 +119,31 @@ print("t-test result：")
 print(t_test_result)
 # Draw the histogram
 hist(approved_income, 
-     col = "lightgreen",
+     col = "#8DD9C1",
      main = "The distribution of annual income", 
      xlab = "Annual income", 
      ylab = "Frequency",
      breaks = 30)
 hist(rejected_income, 
-     col = "red", 
+     col = "#12362A", 
      breaks = 30,
      add = TRUE)
 legend("topright", 
        legend = c("Approved", "Rejected"), 
-       fill = c("lightgreen", "red")) 
+       fill = c("#8DD9C1", "#12362A")) 
 
 ```
-The average income of the approved group is 5,025,904, and that of the rejected group is 5,113,825, with a difference of approximately 87,921. Then I did the hypothesis testing to do advanced judgment.
+The average annual income of the approved group is `5,025,904`, while that of the rejected group is `5,113,825`, resulting in a mean difference of approximately `87,921`. To determine whether this difference is statistically significant, a Welch Two-Sample t-test was performed.
 
-H0: There is no significant difference in the average annual income between two groups.
-H1: There is a significant difference in the average annual income between two groups.
+- **Null Hypothesis (H₀):** There is no significant difference in the average annual income between approved and rejected applicants.
 
-According to the result of t-test:
-t-value: -1, indicating that the difference between the two group means is not prominent compared to the sample variation.
-p-value: 0.3 which is much larger than the significance level of 0.05, indicating that the different is non-significant.
-95% confidence interval: [-260,821, 84,978]. The interval contains 0, indicating that the mean difference between the two groups may be 0.
-Finally, I drew the histogram chart, the distribution of each group's annual income is uniform. Also enhanced the conclusion.
+- **Alternative Hypothesis (H₁):** There is a significant difference in the average annual income between approved and rejected applicants.
 
-All above suggests that income alone may not be a strong predictor of loan approval in this dataset.
+The test results showed a **t-value** of `-1` and a **p-value** of `0.3`, which is much greater than the significance level `(α = 0.05)`. This indicates that the difference between the two means is **not statistically significant**. The `95%` confidence interval for the mean difference is `[-260,821, 84,978]`, which includes zero; further supporting the conclusion that the average incomes of the two groups may be equal.
+
+A histogram comparing the income distributions of both groups also shows similar shapes, reinforcing that there is no clear distinction between them.
+
+In conclusion, income alone does not appear to be a strong predictor of loan approval in this dataset.
 
 
 
@@ -176,7 +175,7 @@ plot(
   xlab = "Annual Income",
   ylab = "Loan Amount Requested",
   pch = 16,
-  col = "lightblue",
+  col = "#FFC412",
   cex = 0.8
 )
 # Add the regression line
@@ -191,29 +190,30 @@ legend("topleft",
 
 
 ```
-I checked whether the data of annual income and loan amount is follow the normal distribution and choose the Spearman  correlation coefficient according to the result.
-The rho is 0.941 which is close to 1, indicating that there is a very strong positive monotonic correlation between the annual income and loan amount exist and the p-value is far less than 0.05 also showed this correlation is very significant in statistic.
-Then according to the plot chart, it's very clear that the loan amount shows an obvious upward trend from the bottom left to the top right as annual income increases, and the red regression line further strengthens the visual evidence of this linear association, indicating a strong positive correlation tendency between the two.
-In short, this analysis clearly draws the conclusion that "annual income is a key factor affecting the loan application amount, and there is a strong positive correlation between the two."
+The normality of the data for both annual income and loan amount was tested, and since they did not follow a normal distribution, the Spearman correlation coefficient was used. The resulting `rho = 0.941` indicates a very strong positive correlation between the two variables, with a `p-value < 0.05`, confirming that the relationship is statistically significant.
+
+The scatter plot further supports this finding, showing a clear upward trend—loan amounts increase as annual income increases. The red regression line visually emphasizes this strong positive relationship.
+
+In conclusion, Annual income is a key factor influencing the loan amount requested, as the two are strongly and positively correlated.
 
 ### Is there a significant difference in average CIBIL scores between approved and rejected applicants?
 ```{r Q5, echo=TRUE}
 library(ggplot2)
 #CIBIL score frequency distribution
-hist(loan_df$cibil_score, main = "Frequency Distribution of CIBIL Scores", xlab = "CIBIL Score", ylab = "Frequency", breaks = 15, col = "lightblue")
+hist(loan_df$cibil_score, main = "Frequency Distribution of CIBIL Scores", xlab = "CIBIL Score", ylab = "Frequency", breaks = 15, col = "#197571")
 
 #CIBIL score frequency distribution
 loan_df$loan_status <- factor(trimws(loan_df$loan_status))
 ggplot(loan_df, aes(x = cibil_score, fill = loan_status)) +
   geom_histogram(binwidth = 50, color = "white", alpha = 0.8) +
   facet_wrap(~ loan_status, scales = "free_y") +
-  labs(title = "CIBIL Score Distribution by Loan Status", x = "CIBIL Score", y = "Frequency", fill = "Loan Status") + scale_fill_manual(values = c("Approved" = "darkgreen", "Rejected" = "darkred"))
+  labs(title = "CIBIL Score Distribution by Loan Status", x = "CIBIL Score", y = "Frequency", fill = "Loan Status") + scale_fill_manual(values = c("Approved" = "#197571", "Rejected" = "#FFCF85"))
 
 #CIBIL score frequency box chart
 ggplot(loan_df, aes(x = loan_status, y = cibil_score, fill = loan_status)) +
   geom_boxplot() +
   labs(title = "CIBIL Score Distribution by Loan Status", x = "Loan Status", y = "CIBIL Score") +
-  scale_fill_manual(values = c("Approved" = "darkgreen", "Rejected" = "darkred"))
+  scale_fill_manual(values = c("Approved" = "#FFCF85", "Rejected" = "#197571"))
 
 #t-test
 t.test(cibil_score ~ loan_status, data = loan_df)
@@ -221,7 +221,7 @@ t.test(cibil_score ~ loan_status, data = loan_df)
 ```
 The overall CIBIL score frequency distribution shows no apparent outliers. The individual distributions for approved and rejected loans show a few outliers, but it is not necessary to remove them. Even though the outliers are dragging the two means closer to each other, the means are still significantly different even when including them in the t-test.
 
-There is a significant difference in CIBIL scores between approved and rejected applicants because the p-value, 2e-16, is much lower than the standard alpha threshold of 0.05. This allows us to reject the null hypothesis that the two means of approved and rejected applicants are equal.
+There is a significant difference in CIBIL scores between approved and rejected applicants because the p-value, `2e-16`, is much lower than the standard alpha threshold of `0.05`. This allows us to reject the null hypothesis that the two means of approved and rejected applicants are **equal**.
 
 ### For rejected loans, is there a significant difference in the mean CIBIL score between applicants with shorter loan term loans (<=10 years) versus longer term loans(>10 years)?
 ```{r Q6, echo=TRUE}
@@ -231,11 +231,18 @@ rejected_shorter <- subset(loan_df, trimws(loan_status) == "Rejected" & loan_ter
 rejected_longer <- subset(loan_df, trimws(loan_status) == "Rejected" & loan_term > 10)
 
 #Overall loan term frequency distribution
-ggplot(loan_df, aes(x = factor(loan_term))) + geom_bar(fill = "lightblue") + labs(title = "Frequency Distribution of Loan Terms", x = "Loan Term (Years)", y = "Frequency")
+ggplot(loan_df, aes(x = factor(loan_term))) + geom_bar(fill = "#7B3D91") + labs(title = "Frequency Distribution of Loan Terms", x = "Loan Term (Years)", y = "Frequency")
 
 #boxplot
-boxplot(rejected_shorter$cibil_score, rejected_longer$cibil_score, names = c("Shorter (<= 10 yrs)", "Longer (> 10 yrs)"), main = "CIBIL Score Distribution for Rejected Loans", ylab = "CIBIL Score", xlab = "Loan Term Group")
-
+boxplot(
+  rejected_shorter$cibil_score,
+  rejected_longer$cibil_score,
+  names = c("Shorter (<= 10 yrs)", "Longer (> 10 yrs)"),
+  main = "CIBIL Score Distribution for Rejected Loans",
+  ylab = "CIBIL Score",
+  xlab = "Loan Term Group",
+  col = c("#A769C2", "#87BDCC")  # add your custom colors here
+)
 #removing outliers
 removeOutliers <- function(x) {Q1 <- quantile(x, 0.25)
 Q3 <- quantile(x, 0.75);
@@ -255,7 +262,7 @@ t.test(cleaned_shorter_cibil, cleaned_longer_cibil)
 
 The overall loan terms frequency distribution shows no apparent outliers however there are a few in the shorter and longer loan term groups. Having this said, even when removing these outliers there no significant differences found between the two groups and their respective CIBIL scores.
 
-There is not a significant difference in CIBIL scores between shorter (<= 10 years) and longer (>10 years) term loans within the rejected group of applicants because the p-value, 1, is much higher than the standard alpha threshold of 0.05. This allows us to accept the null hypothesis that the two means of shorter and longer term loans of rejected applicants are equal.
+There is not a significant difference in CIBIL scores between shorter `(<= 10 years)` and longer `(>10 years)` term loans within the rejected group of applicants because the **p-value**, `1`, is much higher than the standard alpha threshold of `0.05`. This allows us to accept the null hypothesis that the two means of shorter and longer term loans of rejected applicants are equal.
 
 ### Is there a correlation between the CIBIL Score and the Loan Term among those whose loans are approved?  
 ```{r Q7, echo=TRUE}
@@ -267,11 +274,11 @@ corr_r <- cor(loan_df[trimws(loan_df$loan_status) == "Approved", "cibil_score"],
 cor.test(loan_df[trimws(loan_df$loan_status) == "Approved", "cibil_score"], loan_df[trimws(loan_df$loan_status) == "Approved", "loan_term"], method = "pearson")
 
 #scatter plot
-ggplot(subset(loan_df, trimws(loan_status) == "Approved"), aes(x = loan_term, y = cibil_score)) + geom_point(alpha = 0.4, color = "blue") + geom_smooth(method = "lm", se = FALSE, color = "red") + labs(title = "CIBIL Score vs. Loan Term for Approved Loans", x = "Loan Term (Years)", y = "CIBIL Score")
+ggplot(subset(loan_df, trimws(loan_status) == "Approved"), aes(x = loan_term, y = cibil_score)) + geom_point(alpha = 0.4, color = "#AAE5D8") + geom_smooth(method = "lm", se = FALSE, color = "#061411") + labs(title = "CIBIL Score vs. Loan Term for Approved Loans", x = "Loan Term (Years)", y = "CIBIL Score")
 
 ```
 
-The correlation coefficient of 0.21 shows a weak but positive relationship where approved candidates with higher CIBIL scores have a slightly higher tendency to approved for longer loan terms. And the p-value is very small, 2e-16, meaning that the correlation coefficient is unlikely due to chance.
+The correlation coefficient of `0.21` shows a weak but positive relationship where approved candidates with higher CIBIL scores have a slightly higher tendency to approved for longer loan terms. And the p-value is very small, `2e-16`, meaning that the correlation coefficient is unlikely due to chance.
 
 ### Does self-employment status affect loan approval?
 ```{r Q8, echo=TRUE}
