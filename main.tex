@@ -1,0 +1,951 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Data Science Project - Loan Approval},
+  pdfauthor={Alex Biuckians, Armin Soroosh, Dania Salman, Kaipu Liu},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Data Science Project - Loan Approval}
+\author{Alex Biuckians, Armin Soroosh, Dania Salman, Kaipu Liu}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\subsection{Loading the Dataset}\label{loading-the-dataset}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# reading dataset}
+\NormalTok{loan\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\FunctionTok{read.csv}\NormalTok{(}\StringTok{"loan\_approval\_dataset.csv"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# exploring dataset}
+\FunctionTok{str}\NormalTok{(loan\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    4269 obs. of  13 variables:
+##  $ loan_id                 : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ no_of_dependents        : int  2 0 3 3 5 0 5 2 0 5 ...
+##  $ education               : chr  " Graduate" " Not Graduate" " Graduate" " Graduate" ...
+##  $ self_employed           : chr  " No" " Yes" " No" " No" ...
+##  $ income_annum            : int  9600000 4100000 9100000 8200000 9800000 4800000 8700000 5700000 800000 1100000 ...
+##  $ loan_amount             : int  29900000 12200000 29700000 30700000 24200000 13500000 33000000 15000000 2200000 4300000 ...
+##  $ loan_term               : int  12 8 20 8 20 10 4 20 20 10 ...
+##  $ cibil_score             : int  778 417 506 467 382 319 678 382 782 388 ...
+##  $ residential_assets_value: int  2400000 2700000 7100000 18200000 12400000 6800000 22500000 13200000 1300000 3200000 ...
+##  $ commercial_assets_value : int  17600000 2200000 4500000 3300000 8200000 8300000 14800000 5700000 800000 1400000 ...
+##  $ luxury_assets_value     : int  22700000 8800000 33300000 23300000 29400000 13700000 29200000 11800000 2800000 3300000 ...
+##  $ bank_asset_value        : int  8000000 3300000 12800000 7900000 5000000 5100000 4300000 6000000 600000 1600000 ...
+##  $ loan_status             : chr  " Approved" " Rejected" " Rejected" " Rejected" ...
+\end{verbatim}
+
+The dataset has \textbf{4269 observations} with \textbf{13 variables}
+
+\subsection{Data Cleaning \& Summary}\label{data-cleaning-summary}
+
+\subsubsection{subsetting data and converting categorical variables to
+factor}\label{subsetting-data-and-converting-categorical-variables-to-factor}
+
+Removing loan\_id column since it only serves as a unique identifier and
+does not contribute to the analysis. Furthermore, converting several
+numeric variables into factors, as they represent categorical
+information rather than continuous numerical values.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{loan\_df }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(loan\_df, }\AttributeTok{select =} \SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(loan\_id))}
+
+\CommentTok{\# converting the numeric variables to factor variables}
+\NormalTok{loan\_df}\SpecialCharTok{$}\NormalTok{no\_of\_dependents }\OtherTok{=} \FunctionTok{as.factor}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{no\_of\_dependents)}
+\NormalTok{loan\_df}\SpecialCharTok{$}\NormalTok{education }\OtherTok{=} \FunctionTok{as.factor}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{education)}
+\NormalTok{loan\_df}\SpecialCharTok{$}\NormalTok{self\_employed }\OtherTok{=} \FunctionTok{as.factor}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{self\_employed)}
+\NormalTok{loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status }\OtherTok{=} \FunctionTok{as.factor}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status)}
+\FunctionTok{str}\NormalTok{(loan\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    4269 obs. of  12 variables:
+##  $ no_of_dependents        : Factor w/ 6 levels "0","1","2","3",..: 3 1 4 4 6 1 6 3 1 6 ...
+##  $ education               : Factor w/ 2 levels " Graduate"," Not Graduate": 1 2 1 1 2 1 1 1 1 2 ...
+##  $ self_employed           : Factor w/ 2 levels " No"," Yes": 1 2 1 1 2 2 1 2 2 1 ...
+##  $ income_annum            : int  9600000 4100000 9100000 8200000 9800000 4800000 8700000 5700000 800000 1100000 ...
+##  $ loan_amount             : int  29900000 12200000 29700000 30700000 24200000 13500000 33000000 15000000 2200000 4300000 ...
+##  $ loan_term               : int  12 8 20 8 20 10 4 20 20 10 ...
+##  $ cibil_score             : int  778 417 506 467 382 319 678 382 782 388 ...
+##  $ residential_assets_value: int  2400000 2700000 7100000 18200000 12400000 6800000 22500000 13200000 1300000 3200000 ...
+##  $ commercial_assets_value : int  17600000 2200000 4500000 3300000 8200000 8300000 14800000 5700000 800000 1400000 ...
+##  $ luxury_assets_value     : int  22700000 8800000 33300000 23300000 29400000 13700000 29200000 11800000 2800000 3300000 ...
+##  $ bank_asset_value        : int  8000000 3300000 12800000 7900000 5000000 5100000 4300000 6000000 600000 1600000 ...
+##  $ loan_status             : Factor w/ 2 levels " Approved"," Rejected": 1 2 2 2 2 2 1 2 1 2 ...
+\end{verbatim}
+
+After conversion, the dataset contains four categorical variables:
+
+\begin{itemize}
+\item
+  \textbf{no\_of\_dependents:} Number of dependents the applicant has
+  (\texttt{6} categories: \texttt{0}, \texttt{1}, \texttt{2},
+  \texttt{3}, \texttt{4}, \texttt{5})
+\item
+  \textbf{education:} Applicant's level of education (\texttt{2}
+  categories: \texttt{Graduate}, \texttt{Not\ Graduate})
+\item
+  \textbf{self\_employed:} Whether the applicant is self-employed
+  (\texttt{2} categories: \texttt{Yes}, \texttt{No})
+\item
+  \textbf{loan\_status:} Loan approval status --- this is the target
+  variable (\texttt{2} categories: \texttt{Approved}, \texttt{Rejected})
+\end{itemize}
+
+\subsubsection{Finding NA values}\label{finding-na-values}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(loan\_df))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+There are no NA values in the data set
+
+\subsubsection{Summary of the dataset}\label{summary-of-the-dataset}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(loan\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  no_of_dependents         education    self_employed  income_annum    
+##  0:712             Graduate    :2144    No :2119     Min.   : 200000  
+##  1:697             Not Graduate:2125    Yes:2150     1st Qu.:2700000  
+##  2:708                                               Median :5100000  
+##  3:727                                               Mean   :5059124  
+##  4:752                                               3rd Qu.:7500000  
+##  5:673                                               Max.   :9900000  
+##   loan_amount         loan_term     cibil_score  residential_assets_value
+##  Min.   :  300000   Min.   : 2.0   Min.   :300   Min.   : -100000        
+##  1st Qu.: 7700000   1st Qu.: 6.0   1st Qu.:453   1st Qu.: 2200000        
+##  Median :14500000   Median :10.0   Median :600   Median : 5600000        
+##  Mean   :15133450   Mean   :10.9   Mean   :600   Mean   : 7472617        
+##  3rd Qu.:21500000   3rd Qu.:16.0   3rd Qu.:748   3rd Qu.:11300000        
+##  Max.   :39500000   Max.   :20.0   Max.   :900   Max.   :29100000        
+##  commercial_assets_value luxury_assets_value bank_asset_value  
+##  Min.   :       0        Min.   :  300000    Min.   :       0  
+##  1st Qu.: 1300000        1st Qu.: 7500000    1st Qu.: 2300000  
+##  Median : 3700000        Median :14600000    Median : 4600000  
+##  Mean   : 4973155        Mean   :15126306    Mean   : 4976692  
+##  3rd Qu.: 7600000        3rd Qu.:21700000    3rd Qu.: 7100000  
+##  Max.   :19400000        Max.   :39200000    Max.   :14700000  
+##     loan_status  
+##   Approved:2656  
+##   Rejected:1613  
+##                  
+##                  
+##                  
+## 
+\end{verbatim}
+
+Overall, the dataset appears well-structured and balanced.
+\textbf{Categorical variables} such as \texttt{education},
+\texttt{self\_employment}, and \texttt{loan\_status} show nearly
+\textbf{even distributions} across their categories. Most
+\textbf{numerical variables} fall within reasonable ranges, with average
+loan terms around \texttt{11\ years} and CIBIL scores centered near
+\texttt{600}, both indicating realistic applicant profiles. However,
+some financial variables like income, loan amount, and asset values show
+wide variation and possible outliers. In particular, the presence of
+negative values in \texttt{residential\_assets\_value} points to
+potential data quality issues that will need correction before
+exploration or testing.
+
+\subsubsection{Cleaning up negative
+values}\label{cleaning-up-negative-values}
+
+Checking the number of rows that have negative values for
+\texttt{residential\_assets\_value} column
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sum}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{residential\_assets\_value }\SpecialCharTok{\textless{}} \DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 28
+\end{verbatim}
+
+There are \texttt{28} entries with negative values.
+
+\subsubsection{Removing entries with negative
+values}\label{removing-entries-with-negative-values}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{loan\_df }\OtherTok{\textless{}{-}}\NormalTok{ loan\_df[loan\_df}\SpecialCharTok{$}\NormalTok{residential\_assets\_value }\SpecialCharTok{\textgreater{}=} \DecValTok{0}\NormalTok{, ]}
+\FunctionTok{str}\NormalTok{(loan\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    4241 obs. of  12 variables:
+##  $ no_of_dependents        : Factor w/ 6 levels "0","1","2","3",..: 3 1 4 4 6 1 6 3 1 6 ...
+##  $ education               : Factor w/ 2 levels " Graduate"," Not Graduate": 1 2 1 1 2 1 1 1 1 2 ...
+##  $ self_employed           : Factor w/ 2 levels " No"," Yes": 1 2 1 1 2 2 1 2 2 1 ...
+##  $ income_annum            : int  9600000 4100000 9100000 8200000 9800000 4800000 8700000 5700000 800000 1100000 ...
+##  $ loan_amount             : int  29900000 12200000 29700000 30700000 24200000 13500000 33000000 15000000 2200000 4300000 ...
+##  $ loan_term               : int  12 8 20 8 20 10 4 20 20 10 ...
+##  $ cibil_score             : int  778 417 506 467 382 319 678 382 782 388 ...
+##  $ residential_assets_value: int  2400000 2700000 7100000 18200000 12400000 6800000 22500000 13200000 1300000 3200000 ...
+##  $ commercial_assets_value : int  17600000 2200000 4500000 3300000 8200000 8300000 14800000 5700000 800000 1400000 ...
+##  $ luxury_assets_value     : int  22700000 8800000 33300000 23300000 29400000 13700000 29200000 11800000 2800000 3300000 ...
+##  $ bank_asset_value        : int  8000000 3300000 12800000 7900000 5000000 5100000 4300000 6000000 600000 1600000 ...
+##  $ loan_status             : Factor w/ 2 levels " Approved"," Rejected": 1 2 2 2 2 2 1 2 1 2 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(loan\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  no_of_dependents         education    self_employed  income_annum    
+##  0:706             Graduate    :2127    No :2106     Min.   : 200000  
+##  1:696             Not Graduate:2114    Yes:2135     1st Qu.:2700000  
+##  2:701                                               Median :5100000  
+##  3:725                                               Mean   :5074251  
+##  4:744                                               3rd Qu.:7500000  
+##  5:669                                               Max.   :9900000  
+##   loan_amount         loan_term     cibil_score  residential_assets_value
+##  Min.   :  300000   Min.   : 2.0   Min.   :300   Min.   :       0        
+##  1st Qu.: 7700000   1st Qu.: 6.0   1st Qu.:453   1st Qu.: 2200000        
+##  Median :14600000   Median :10.0   Median :600   Median : 5700000        
+##  Mean   :15178401   Mean   :10.9   Mean   :600   Mean   : 7522613        
+##  3rd Qu.:21500000   3rd Qu.:16.0   3rd Qu.:747   3rd Qu.:11400000        
+##  Max.   :39500000   Max.   :20.0   Max.   :900   Max.   :29100000        
+##  commercial_assets_value luxury_assets_value bank_asset_value  
+##  Min.   :       0        Min.   :  300000    Min.   :       0  
+##  1st Qu.: 1300000        1st Qu.: 7500000    1st Qu.: 2400000  
+##  Median : 3700000        Median :14600000    Median : 4600000  
+##  Mean   : 4985121        Mean   :15171210    Mean   : 4991488  
+##  3rd Qu.: 7700000        3rd Qu.:21700000    3rd Qu.: 7100000  
+##  Max.   :19400000        Max.   :39200000    Max.   :14700000  
+##     loan_status  
+##   Approved:2640  
+##   Rejected:1601  
+##                  
+##                  
+##                  
+## 
+\end{verbatim}
+
+After filtering out the rows with negative values, the dataset now has
+\texttt{4,241\ observations}. The distributions across all variables
+look almost identical to before, showing that this cleaning step didn't
+affect the data overall.
+
+\subsection{Exploratory Data Analysis}\label{exploratory-data-analysis}
+
+\subsubsection{Does education level affect loan
+approval?}\label{does-education-level-affect-loan-approval}
+
+\subsubsection{Do people with higher asset values tend to get approved
+more
+often?}\label{do-people-with-higher-asset-values-tend-to-get-approved-more-often}
+
+\subsubsection{Is there a significant difference in average income
+between approved and rejected
+applicants?}\label{is-there-a-significant-difference-in-average-income-between-approved-and-rejected-applicants}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Group by loan approval status and extract their annual income data}
+\NormalTok{approved\_income }\OtherTok{\textless{}{-}}\NormalTok{ loan\_df}\SpecialCharTok{$}\NormalTok{income\_annum[loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status }\SpecialCharTok{==} \StringTok{" Approved"}\NormalTok{]}
+\NormalTok{rejected\_income }\OtherTok{\textless{}{-}}\NormalTok{ loan\_df}\SpecialCharTok{$}\NormalTok{income\_annum[loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status }\SpecialCharTok{==} \StringTok{" Rejected"}\NormalTok{]}
+\CommentTok{\# Calculate each group\textquotesingle{}s mean annual income}
+\NormalTok{mean\_approved }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(approved\_income, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{mean\_rejected }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(rejected\_income, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Mean annual income of Approved group:"}\NormalTok{, mean\_approved, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Mean annual income of Approved group: 5034886
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Mean annual income of Rejected group:"}\NormalTok{, mean\_rejected, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Mean annual income of Rejected group: 5139163
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Conduct hypothesis testing}
+\NormalTok{t\_test\_result }\OtherTok{\textless{}{-}} \FunctionTok{t.test}\NormalTok{(approved\_income, rejected\_income)}
+\FunctionTok{print}\NormalTok{(}\StringTok{"t{-}test result："}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "t-test result："
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(t\_test\_result)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Welch Two Sample t-test
+## 
+## data:  approved_income and rejected_income
+## t = -1, df = 3435, p-value = 0.2
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -277421   68867
+## sample estimates:
+## mean of x mean of y 
+##   5034886   5139163
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Draw the histogram}
+\FunctionTok{hist}\NormalTok{(approved\_income, }
+     \AttributeTok{col =} \StringTok{"lightgreen"}\NormalTok{,}
+     \AttributeTok{main =} \StringTok{"The distribution of annual income"}\NormalTok{, }
+     \AttributeTok{xlab =} \StringTok{"Annual income"}\NormalTok{, }
+     \AttributeTok{ylab =} \StringTok{"Frequency"}\NormalTok{,}
+     \AttributeTok{breaks =} \DecValTok{30}\NormalTok{)}
+\FunctionTok{hist}\NormalTok{(rejected\_income, }
+     \AttributeTok{col =} \StringTok{"red"}\NormalTok{, }
+     \AttributeTok{breaks =} \DecValTok{30}\NormalTok{,}
+     \AttributeTok{add =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }
+       \AttributeTok{legend =} \FunctionTok{c}\NormalTok{(}\StringTok{"Approved"}\NormalTok{, }\StringTok{"Rejected"}\NormalTok{), }
+       \AttributeTok{fill =} \FunctionTok{c}\NormalTok{(}\StringTok{"lightgreen"}\NormalTok{, }\StringTok{"red"}\NormalTok{)) }
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q3-1.pdf}}
+The average annual income of the approved group is \texttt{5,025,904},
+while that of the rejected group is \texttt{5,113,825}, resulting in a
+mean difference of approximately \texttt{87,921}. To determine whether
+this difference is statistically significant, a Welch Two-Sample t-test
+was performed.
+
+\begin{itemize}
+\item
+  \textbf{Null Hypothesis (H₀):} There is no significant difference in
+  the average annual income between approved and rejected applicants.
+\item
+  \textbf{Alternative Hypothesis (H₁):} There is a significant
+  difference in the average annual income between approved and rejected
+  applicants.
+\end{itemize}
+
+The test results showed a \textbf{t-value} of \texttt{-1} and a
+\textbf{p-value} of \texttt{0.3}, which is much greater than the
+significance level \texttt{(α\ =\ 0.05)}. This indicates that the
+difference between the two means is \textbf{not statistically
+significant}. The \texttt{95\%} confidence interval for the mean
+difference is \texttt{{[}-260,821,\ 84,978{]}}, which includes zero;
+further supporting the conclusion that the average incomes of the two
+groups may be equal.
+
+A histogram comparing the income distributions of both groups also shows
+similar shapes, reinforcing that there is no clear distinction between
+them.
+
+In conclusion, income alone does not appear to be a strong predictor of
+loan approval in this dataset.
+
+\subsubsection{Is there a correlation between applicant's annual income
+and loan amount
+requested?}\label{is-there-a-correlation-between-applicants-annual-income-and-loan-amount-requested}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{annual\_income }\OtherTok{\textless{}{-}}\NormalTok{ loan\_df}\SpecialCharTok{$}\NormalTok{income\_annum}
+\NormalTok{loan\_amount }\OtherTok{\textless{}{-}}\NormalTok{ loan\_df}\SpecialCharTok{$}\NormalTok{loan\_amount}
+
+\CommentTok{\# Check whether normal distribution}
+\NormalTok{shapiro\_income }\OtherTok{\textless{}{-}} \FunctionTok{shapiro.test}\NormalTok{(annual\_income)}
+\NormalTok{shapiro\_loan }\OtherTok{\textless{}{-}} \FunctionTok{shapiro.test}\NormalTok{(loan\_amount)}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"p{-}value of annual income："}\NormalTok{, shapiro\_income}\SpecialCharTok{$}\NormalTok{p.value, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## p-value of annual income： 7.7e-34
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"p{-}value of loan amount："}\NormalTok{, shapiro\_loan}\SpecialCharTok{$}\NormalTok{p.value, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## p-value of loan amount： 6.22e-28
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Choose the correlation coefficient}
+\ControlFlowTok{if}\NormalTok{ (shapiro\_income}\SpecialCharTok{$}\NormalTok{p.value }\SpecialCharTok{\textgreater{}} \FloatTok{0.05} \SpecialCharTok{\&}\NormalTok{ shapiro\_loan}\SpecialCharTok{$}\NormalTok{p.value }\SpecialCharTok{\textgreater{}} \FloatTok{0.05}\NormalTok{) \{}
+\NormalTok{  cor\_result }\OtherTok{\textless{}{-}} \FunctionTok{cor.test}\NormalTok{(annual\_income, loan\_amount, }\AttributeTok{method =} \StringTok{"pearson"}\NormalTok{)}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Pearson result：}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{  cor\_result }\OtherTok{\textless{}{-}} \FunctionTok{cor.test}\NormalTok{(annual\_income, loan\_amount, }\AttributeTok{method =} \StringTok{"spearman"}\NormalTok{)}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Spearman reslut：}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Spearman reslut：
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(cor\_result)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Spearman's rank correlation rho
+## 
+## data:  annual_income and loan_amount
+## S = 8e+08, p-value <2e-16
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##   rho 
+## 0.941
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Draw the plot}
+\FunctionTok{plot}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ annual\_income,}
+  \AttributeTok{y =}\NormalTok{ loan\_amount,}
+  \AttributeTok{main =} \StringTok{"Annual Income vs. Loan Amount Requested"}\NormalTok{,}
+  \AttributeTok{xlab =} \StringTok{"Annual Income"}\NormalTok{,}
+  \AttributeTok{ylab =} \StringTok{"Loan Amount Requested"}\NormalTok{,}
+  \AttributeTok{pch =} \DecValTok{16}\NormalTok{,}
+  \AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{,}
+  \AttributeTok{cex =} \FloatTok{0.8}
+\NormalTok{)}
+\CommentTok{\# Add the regression line}
+\FunctionTok{abline}\NormalTok{(}\FunctionTok{lm}\NormalTok{(loan\_amount }\SpecialCharTok{\textasciitilde{}}\NormalTok{ annual\_income), }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topleft"}\NormalTok{, }
+       \AttributeTok{legend =} \StringTok{"regression line"}\NormalTok{, }
+       \AttributeTok{col =} \StringTok{"red"}\NormalTok{, }
+       \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }
+       \AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q4-1.pdf}}
+I checked whether the data of annual income and loan amount is follow
+the normal distribution and choose the Spearman correlation coefficient
+according to the result. The rho is 0.941 which is close to 1,
+indicating that there is a very strong positive monotonic correlation
+between the annual income and loan amount exist and the p-value is far
+less than 0.05 also showed this correlation is very significant in
+statistic. Then according to the plot chart, it's very clear that the
+loan amount shows an obvious upward trend from the bottom left to the
+top right as annual income increases, and the red regression line
+further strengthens the visual evidence of this linear association,
+indicating a strong positive correlation tendency between the two. In
+short, this analysis clearly draws the conclusion that ``annual income
+is a key factor affecting the loan application amount, and there is a
+strong positive correlation between the two.''
+
+\subsubsection{Is there a significant difference in average CIBIL scores
+between approved and rejected
+applicants?}\label{is-there-a-significant-difference-in-average-cibil-scores-between-approved-and-rejected-applicants}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\CommentTok{\#CIBIL score frequency distribution}
+\FunctionTok{hist}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{cibil\_score, }\AttributeTok{main =} \StringTok{"Frequency Distribution of CIBIL Scores"}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"CIBIL Score"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Frequency"}\NormalTok{, }\AttributeTok{breaks =} \DecValTok{15}\NormalTok{, }\AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q5-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#CIBIL score frequency distribution}
+\NormalTok{loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(}\FunctionTok{trimws}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status))}
+\FunctionTok{ggplot}\NormalTok{(loan\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ cibil\_score, }\AttributeTok{fill =}\NormalTok{ loan\_status)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{binwidth =} \DecValTok{50}\NormalTok{, }\AttributeTok{color =} \StringTok{"white"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.8}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ loan\_status, }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"CIBIL Score Distribution by Loan Status"}\NormalTok{, }\AttributeTok{x =} \StringTok{"CIBIL Score"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Frequency"}\NormalTok{, }\AttributeTok{fill =} \StringTok{"Loan Status"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Approved"} \OtherTok{=} \StringTok{"darkgreen"}\NormalTok{, }\StringTok{"Rejected"} \OtherTok{=} \StringTok{"darkred"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q5-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#CIBIL score frequency box chart}
+\FunctionTok{ggplot}\NormalTok{(loan\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ loan\_status, }\AttributeTok{y =}\NormalTok{ cibil\_score, }\AttributeTok{fill =}\NormalTok{ loan\_status)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"CIBIL Score Distribution by Loan Status"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Loan Status"}\NormalTok{, }\AttributeTok{y =} \StringTok{"CIBIL Score"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Approved"} \OtherTok{=} \StringTok{"darkgreen"}\NormalTok{, }\StringTok{"Rejected"} \OtherTok{=} \StringTok{"darkred"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q5-3.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#t{-}test}
+\FunctionTok{t.test}\NormalTok{(cibil\_score }\SpecialCharTok{\textasciitilde{}}\NormalTok{ loan\_status, }\AttributeTok{data =}\NormalTok{ loan\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Welch Two Sample t-test
+## 
+## data:  cibil_score by loan_status
+## t = 88, df = 4238, p-value <2e-16
+## alternative hypothesis: true difference in means between group Approved and group Rejected is not equal to 0
+## 95 percent confidence interval:
+##  268 280
+## sample estimates:
+## mean in group Approved mean in group Rejected 
+##                    703                    429
+\end{verbatim}
+
+The overall CIBIL score frequency distribution shows no apparent
+outliers. The individual distributions for approved and rejected loans
+show a few outliers, but it is not necessary to remove them. Even though
+the outliers are dragging the two means closer to each other, the means
+are still significantly different even when including them in the
+t-test.
+
+There is a significant difference in CIBIL scores between approved and
+rejected applicants because the p-value, 2e-16, is much lower than the
+standard alpha threshold of 0.05. This allows us to reject the null
+hypothesis that the two means of approved and rejected applicants are
+equal.
+
+\subsubsection{For rejected loans, is there a significant difference in
+the mean CIBIL score between applicants with shorter loan term loans
+(\textless=10 years) versus longer term loans(\textgreater10
+years)?}\label{for-rejected-loans-is-there-a-significant-difference-in-the-mean-cibil-score-between-applicants-with-shorter-loan-term-loans-10-years-versus-longer-term-loans10-years}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#created subsets for shorter and longer loans then ran t{-}test}
+\NormalTok{rejected\_shorter }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(loan\_df, }\FunctionTok{trimws}\NormalTok{(loan\_status) }\SpecialCharTok{==} \StringTok{"Rejected"} \SpecialCharTok{\&}\NormalTok{ loan\_term }\SpecialCharTok{\textless{}=} \DecValTok{10}\NormalTok{)}
+\NormalTok{rejected\_longer }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(loan\_df, }\FunctionTok{trimws}\NormalTok{(loan\_status) }\SpecialCharTok{==} \StringTok{"Rejected"} \SpecialCharTok{\&}\NormalTok{ loan\_term }\SpecialCharTok{\textgreater{}} \DecValTok{10}\NormalTok{)}
+
+\CommentTok{\#Overall loan term frequency distribution}
+\FunctionTok{ggplot}\NormalTok{(loan\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{factor}\NormalTok{(loan\_term))) }\SpecialCharTok{+} \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"lightblue"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Frequency Distribution of Loan Terms"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Loan Term (Years)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Frequency"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q6-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#boxplot}
+\FunctionTok{boxplot}\NormalTok{(rejected\_shorter}\SpecialCharTok{$}\NormalTok{cibil\_score, rejected\_longer}\SpecialCharTok{$}\NormalTok{cibil\_score, }\AttributeTok{names =} \FunctionTok{c}\NormalTok{(}\StringTok{"Shorter (\textless{}= 10 yrs)"}\NormalTok{, }\StringTok{"Longer (\textgreater{} 10 yrs)"}\NormalTok{), }\AttributeTok{main =} \StringTok{"CIBIL Score Distribution for Rejected Loans"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"CIBIL Score"}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Loan Term Group"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q6-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#removing outliers}
+\NormalTok{removeOutliers }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) \{Q1 }\OtherTok{\textless{}{-}} \FunctionTok{quantile}\NormalTok{(x, }\FloatTok{0.25}\NormalTok{)}
+\NormalTok{Q3 }\OtherTok{\textless{}{-}} \FunctionTok{quantile}\NormalTok{(x, }\FloatTok{0.75}\NormalTok{);}
+\NormalTok{IQR\_val }\OtherTok{\textless{}{-}}\NormalTok{ Q3 }\SpecialCharTok{{-}}\NormalTok{ Q1;}
+\NormalTok{lower\_bound }\OtherTok{\textless{}{-}}\NormalTok{ Q1 }\SpecialCharTok{{-}}\NormalTok{ (}\FloatTok{1.5} \SpecialCharTok{*}\NormalTok{ IQR\_val);}
+\NormalTok{upper\_bound }\OtherTok{\textless{}{-}}\NormalTok{ Q3 }\SpecialCharTok{+}\NormalTok{ (}\FloatTok{1.5} \SpecialCharTok{*}\NormalTok{ IQR\_val);}
+  
+\FunctionTok{return}\NormalTok{(x[x }\SpecialCharTok{\textgreater{}=}\NormalTok{ lower\_bound }\SpecialCharTok{\&}\NormalTok{ x }\SpecialCharTok{\textless{}=}\NormalTok{ upper\_bound]);\}}
+
+\NormalTok{cleaned\_shorter\_cibil }\OtherTok{\textless{}{-}} \FunctionTok{removeOutliers}\NormalTok{(rejected\_shorter}\SpecialCharTok{$}\NormalTok{cibil\_score)}
+\NormalTok{cleaned\_longer\_cibil }\OtherTok{\textless{}{-}} \FunctionTok{removeOutliers}\NormalTok{(rejected\_longer}\SpecialCharTok{$}\NormalTok{cibil\_score)}
+
+\FunctionTok{t.test}\NormalTok{(rejected\_shorter}\SpecialCharTok{$}\NormalTok{cibil\_score, rejected\_longer}\SpecialCharTok{$}\NormalTok{cibil\_score)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Welch Two Sample t-test
+## 
+## data:  rejected_shorter$cibil_score and rejected_longer$cibil_score
+## t = -0.03, df = 1564, p-value = 1
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -7.72  7.51
+## sample estimates:
+## mean of x mean of y 
+##       429       429
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{t.test}\NormalTok{(cleaned\_shorter\_cibil, cleaned\_longer\_cibil)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Welch Two Sample t-test
+## 
+## data:  cleaned_shorter_cibil and cleaned_longer_cibil
+## t = -0.05, df = 1563, p-value = 1
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -7.47  7.09
+## sample estimates:
+## mean of x mean of y 
+##       427       428
+\end{verbatim}
+
+The overall loan terms frequency distribution shows no apparent outliers
+however there are a few in the shorter and longer loan term groups.
+Having this said, even when removing these outliers there no significant
+differences found between the two groups and their respective CIBIL
+scores.
+
+There is not a significant difference in CIBIL scores between shorter
+(\textless= 10 years) and longer (\textgreater10 years) term loans
+within the rejected group of applicants because the p-value, 1, is much
+higher than the standard alpha threshold of 0.05. This allows us to
+accept the null hypothesis that the two means of shorter and longer term
+loans of rejected applicants are equal.
+
+\subsubsection{Is there a correlation between the CIBIL Score and the
+Loan Term among those whose loans are
+approved?}\label{is-there-a-correlation-between-the-cibil-score-and-the-loan-term-among-those-whose-loans-are-approved}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#correlation coefficient}
+\NormalTok{corr\_r }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(loan\_df[}\FunctionTok{trimws}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status) }\SpecialCharTok{==} \StringTok{"Approved"}\NormalTok{, }\StringTok{"cibil\_score"}\NormalTok{], loan\_df[}\FunctionTok{trimws}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status) }\SpecialCharTok{==} \StringTok{"Approved"}\NormalTok{, }\StringTok{"loan\_term"}\NormalTok{], }\AttributeTok{method =} \StringTok{"pearson"}\NormalTok{)}
+
+\CommentTok{\#correlation test}
+\FunctionTok{cor.test}\NormalTok{(loan\_df[}\FunctionTok{trimws}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status) }\SpecialCharTok{==} \StringTok{"Approved"}\NormalTok{, }\StringTok{"cibil\_score"}\NormalTok{], loan\_df[}\FunctionTok{trimws}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status) }\SpecialCharTok{==} \StringTok{"Approved"}\NormalTok{, }\StringTok{"loan\_term"}\NormalTok{], }\AttributeTok{method =} \StringTok{"pearson"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  loan_df[trimws(loan_df$loan_status) == "Approved", "cibil_score"] and loan_df[trimws(loan_df$loan_status) == "Approved", "loan_term"]
+## t = 11, df = 2638, p-value <2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.173 0.246
+## sample estimates:
+##  cor 
+## 0.21
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#scatter plot}
+\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(loan\_df, }\FunctionTok{trimws}\NormalTok{(loan\_status) }\SpecialCharTok{==} \StringTok{"Approved"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ loan\_term, }\AttributeTok{y =}\NormalTok{ cibil\_score)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.4}\NormalTok{, }\AttributeTok{color =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{color =} \StringTok{"red"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"CIBIL Score vs. Loan Term for Approved Loans"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Loan Term (Years)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"CIBIL Score"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q7-1.pdf}}
+
+The correlation coefficient of 0.21 shows a weak but positive
+relationship where approved candidates with higher CIBIL scores have a
+slightly higher tendency to approved for longer loan terms. And the
+p-value is very small, 2e-16, meaning that the correlation coefficient
+is unlikely due to chance.
+
+\subsubsection{Does self-employment status affect loan
+approval?}\label{does-self-employment-status-affect-loan-approval}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(loan\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ self\_employed, }\AttributeTok{fill =}\NormalTok{ loan\_status)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"dodge"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Loan Approval by Number of Dependents"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Number of Dependents"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Number of Applicants"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Approved"} \OtherTok{=} \StringTok{"\#F2764E"}\NormalTok{, }\AttributeTok{Rejected =} \StringTok{"\#FAF487"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q8-1.pdf}}
+Approval rates are nearly \textbf{identical} for self-employed and non
+self-employed applicants, suggesting self-employment likely doesn't
+affect loan approval. A Chi-square test will confirm this statistically.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{contable }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{self\_employed, loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status)}
+\FunctionTok{chisq.test}\NormalTok{(contable)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's Chi-squared test with Yates' continuity correction
+## 
+## data:  contable
+## X-squared = 0.009, df = 1, p-value = 0.9
+\end{verbatim}
+
+The Chi-square test (\texttt{p\ =\ 1}) also shows no significant
+association between self-employment status and loan approval. This
+confirms that self-employment does not affect the likelihood of loan
+approval in this dataset.
+
+\subsubsection{Does the number of dependents affect approval of
+loans?}\label{does-the-number-of-dependents-affect-approval-of-loans}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(loan\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ no\_of\_dependents, }\AttributeTok{fill =}\NormalTok{ loan\_status)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"dodge"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Loan Approval by Number of Dependents"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Number of Dependents"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Number of Applicants"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Approved"} \OtherTok{=} \StringTok{"\#0D0942"}\NormalTok{, }\StringTok{"Rejected"} \OtherTok{=} \StringTok{"\#C4C0F6"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q9-1.pdf}}
+The bar chart shows that approval and rejection counts are fairly
+similar across all dependent categories, with no noticeable trend
+suggesting that the number of dependents strongly influences loan
+approval outcomes. While minor variations exist, the approval rate
+appears consistent across groups, indicating that loan approval is
+likely independent of the number of dependents. A Chi-square test will
+confirm this statistically.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{contable }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(loan\_df}\SpecialCharTok{$}\NormalTok{no\_of\_dependents, loan\_df}\SpecialCharTok{$}\NormalTok{loan\_status)}
+\FunctionTok{chisq.test}\NormalTok{(contable)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's Chi-squared test
+## 
+## data:  contable
+## X-squared = 2, df = 5, p-value = 0.8
+\end{verbatim}
+
+The Chi-square test (\texttt{p\ =\ 0.8}) also shows no significant
+association between no\_of\_dependents and loan approval. This confirms
+that no\_of\_dependents does not affect the likelihood of loan approval
+in this dataset.
+
+\subsubsection{Does requested loan term affect
+approval?}\label{does-requested-loan-term-affect-approval}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(loan\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ loan\_status, }\AttributeTok{y =}\NormalTok{ loan\_term, }\AttributeTok{fill =}\NormalTok{ loan\_status)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Loan Term by Loan Approval Status"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Loan Status"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Loan Term (Years)"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Approved"} \OtherTok{=} \StringTok{"\#98C25F"}\NormalTok{, }\StringTok{"Rejected"} \OtherTok{=} \StringTok{"\#EB3BA7"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{main_files/figure-latex/Q10-1.pdf}}
+The boxplot shows that approved loans have a \textbf{wider range} of
+terms, including very short loans, while rejected loans generally have
+longer terms. The median loan term for approved loans is
+\texttt{10\ years}, compared to \texttt{12\ years} for rejected loans,
+indicating that rejected loans tend to have slightly longer terms
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{t.test}\NormalTok{(loan\_term }\SpecialCharTok{\textasciitilde{}}\NormalTok{ loan\_status, }\AttributeTok{data =}\NormalTok{ loan\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Welch Two Sample t-test
+## 
+## data:  loan_term by loan_status
+## t = -8, df = 3637, p-value = 2e-14
+## alternative hypothesis: true difference in means between group Approved and group Rejected is not equal to 0
+## 95 percent confidence interval:
+##  -1.69 -1.01
+## sample estimates:
+## mean in group Approved mean in group Rejected 
+##                   10.4                   11.7
+\end{verbatim}
+
+The two-sample t-test indicates a significant difference in means
+(\texttt{p\ \textless{}\ 0.05}), with approved loans having a shorter
+average term (\texttt{10.4\ years}) than rejected loans
+(\texttt{11.7\ years}). The \texttt{95\%} confidence interval for the
+mean difference is \texttt{-1.69\ to\ -1.01} (the interval doesn't have
+0), confirming that approved loans tend to have shorter terms.
+
+\end{document}
