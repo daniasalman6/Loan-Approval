@@ -213,7 +213,7 @@ ggplot(loan_df, aes(x = cibil_score, fill = loan_status)) +
 ggplot(loan_df, aes(x = loan_status, y = cibil_score, fill = loan_status)) +
   geom_boxplot() +
   labs(title = "CIBIL Score Distribution by Loan Status", x = "Loan Status", y = "CIBIL Score") +
-  scale_fill_manual(values = c("Approved" = "#FFCF85", "Rejected" = "#197571"))
+  scale_fill_manual(values = c("Approved" = "#197571", "Rejected" = "#FFCF85"))
 
 #t-test
 t.test(cibil_score ~ loan_status, data = loan_df)
