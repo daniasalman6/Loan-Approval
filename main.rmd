@@ -93,13 +93,111 @@ After filtering out the rows with negative values, the dataset now has `4,241 ob
 ## Exploratory Data Analysis
 
 ### Does education level affect loan approval?
-```{r Q1, echo=TRUE}
 
+```{r Q1, echo=TRUE}
+edu_table <- table(loan_df$education, loan_df$loan_status)
+print(edu_table)
+
+edu_chi <- chisq.test(edu_table)
+print(edu_chi)
+
+ggplot(loan_df, aes(x = education, fill = loan_status)) +
+  geom_bar(position = "fill") +
+  labs(title = "Loan Approval Rate by Education Level",
+       y = "Proportion",
+       x = "Education Level") +
+  theme_minimal()
 ```
+
+Statistical Analysis Breakdown
+
+Contingency Table
+The raw counts show a very similar distribution of approvals and rejections across both groups.Graduate applicants had 1,339 approvals and 805 rejections.Not Graduate applicants had 1,317 approvals and 808 rejections.This similarity suggests the approval rates are nearly identical: ~62.4% for graduate and 62% for non-graduate.
+
+Chi-Square Test
+The test statistic is .083958. This indicates that the data is close to what you would expect.
+The p-value is .772. It is much larger than the standard significance level of .05, we fail to reject to reject the null hypothesis. This is the formal statistical confirmation that there is no significant association between an applicant's education level and their loan status.
+
+Proportion visualization(The bar chart)
+The stacked bar chart, which shows the proportion of approvals within each education level, visually confirms the statistical finding. The height of the "Approved" segment is virtually the same for both Graduate and Not Graduate bars, indicating that an individual's chance of approval is not meaningfully affected by their educational background.
 
 ### Do people with higher asset values tend to get approved more often?
 ```{r Q2, echo=TRUE}
+#Summary of asset values by loan status
+loan_df %>%
+  group_by(loan_status) %>%
+  summarise(across(c(residential_assets_value, commercial_assets_value,
+                     luxury_assets_value, bank_asset_value),
+                   list(mean = mean, median = median), .names = "{.col}_{.fn}"))
 
+# Independent samples t-tests for each asset type
+t.test(residential_assets_value ~ loan_status, data = loan_df)
+t.test(commercial_assets_value ~ loan_status, data = loan_df)
+t.test(luxury_assets_value ~ loan_status, data = loan_df)
+t.test(bank_asset_value ~ loan_status, data = loan_df)
+```
+These are Welch Two Sample t-test to determine if there is a statistically significant difference in the average asset values between applications whose loans were approved versus those whose loans were rejected. The t-test results demonstrate that the four asset categories consistently show no statistically significant difference between the means of the Approved and Rejected groups. The residential assets demonstrate a slightly higher mean value for the rejected loans at roughly 7.592 million dollars than for approved loans at 7.399 million. However, the p-value of .3481 confirms that the difference is not statistically significant. The mean value of approved loans for commercial assets is slightly higher at 5.001 million dollars compared to 4.926 million dollars. The p-value of .591 confirms the difference is not statistically significant. The mean value of rejected loans for luxury assets is slightly higher at 15.306 million dollars compared to the mean in the group approved at 15.016 million dollars. The p-value of .3107 shows this difference is not statistically significant. For the bank assets, the mean value of rejected loans is slightly higher at 5.004 million dollars compared to the 4.959 million dollar mean for the approved. However, the p-value .656 is not statistically significant. 
+
+#Shapiro test
+```{r}
+
+shapiro_residential <- shapiro.test(loan_df$residential_assets_value)
+shapiro_commercial  <- shapiro.test(loan_df$commercial_assets_value)
+shapiro_luxury      <- shapiro.test(loan_df$luxury_assets_value)
+shapiro_bank_assets<-shapiro.test(loan_df$bank_asset_value)
+
+
+cat("p-value (Residential Assets):", shapiro_residential$p.value, "\n")
+cat("p-value (Commercial Assets):", shapiro_commercial$p.value, "\n")
+cat("p-value (Luxury Assets):", shapiro_luxury$p.value, "\n")
+cat("p-value (Bank Assets):", shapiro_bank_assets$p.value, "\n")
+
+qqnorm(loan_df$residential_assets_value, 
+       main = "Q-Q Plot of Residential Assets Value")
+qqline(loan_df$residential_assets_value, col = "red", lwd = 2)
+qqnorm(loan_df$commercial_assets_value, 
+       main = "Q-Q Plot of Commercial Assets Value")
+qqline(loan_df$commercial_assets_value, col = "red", lwd = 2)
+qqnorm(loan_df$luxury_assets_value, 
+       main = "Q-Q Plot of Luxury Assets Value")
+qqline(loan_df$luxury_assets_value, col = "red", lwd = 2)
+qqnorm(loan_df$bank_asset_value, 
+       main = "Q-Q Plot of Bank Assets Value")
+qqline(loan_df$bank_asset_value, col = "red", lwd = 2)
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
+
+# 1. Residential Assets Histogram
+hist(loan_df$residential_assets_value,
+     main = "Histogram of Residential Assets Value",
+     xlab = "Residential Assets Value",
+     col = "lightblue",
+     border = "black")
+
+# 2. Commercial Assets Histogram
+hist(loan_df$commercial_assets_value,
+     main = "Histogram of Commercial Assets Value",
+     xlab = "Commercial Assets Value",
+     col = "lightgreen",
+     border = "black")
+
+# 3. Luxury Assets Histogram
+hist(loan_df$luxury_assets_value,
+     main = "Histogram of Luxury Assets Value",
+     xlab = "Luxury Assets Value",
+     col = "pink",
+     border = "black")
+
+# 4. Bank Assets Histogram
+hist(loan_df$bank_asset_value,
+     main = "Histogram of Bank Assets Value",
+     xlab = "Bank Assets Value",
+     col = "salmon",
+     border = "black")
+
+# Reset plotting layout to default (1 plot per screen) after generation
+par(mfrow = c(1, 1))
+```
+These tests all see if those with higher assets are approved compared to those who do not Since every p-value is less than the significant level of .05, we reject the null hypothesis and expect those with higher assets to get approved. All the histograms are skewed to the right. This means that most assets are valued at the low end, and extremely high values are rare. The Q-Q plot for the residential assets shows that the points strongly deviate from the line, particularly at the upper end, which is the high asset values. This means that it is not normally distributed. The commercial assets show a similar to residential assets, with a significant upward curve away from the diagonal. This is not normally distributed. The Luxury Asset Q-Q plots shows the same upward curving shape, which means it is not normally distributed. The Q-Q plot for the Bank Asset Value shows a deviation from the line, which makes it not normally distributed. 
 ```
 
 ### Is there a significant difference in average income between approved and rejected applicants?
