@@ -285,8 +285,8 @@ The correlation coefficient of `0.21` shows a weak but positive relationship whe
 ggplot(loan_df, aes(x = self_employed, fill = loan_status)) +
   geom_bar(position = "dodge") +
   labs(
-    title = "Loan Approval by Number of Dependents",
-    x = "Number of Dependents",
+    title = "Loan Approval by self employment status",
+    x = "self employment status",
     y = "Number of Applicants"
   ) +
   scale_fill_manual(values = c("Approved" = "#F2764E", Rejected = "#FAF487")) +
