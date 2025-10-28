@@ -19,7 +19,6 @@ output:
 # include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
 library(ezids)
 library(dplyr) 
-library(tidyr)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 #knitr::opts_chunk$set(warning = F, results="hide", message = F)
 knitr::opts_chunk$set(warning = F, message = F)
@@ -95,65 +94,106 @@ After filtering out the rows with negative values, the dataset now has `4,241 ob
 ## Exploratory Data Analysis
 
 ### Does education level affect loan approval?
-Here, we aim to examine whether the person's **education** (`Graduated` or `Not Graduated`) affects the approval or rejection of a loan. We begin by visualizing the distribution of approved and rejected applications for each education group using a bar chart.
 ```{r Q1, echo=TRUE}
 library(ggplot2)
-ggplot(loan_df, aes(x = loan_status, fill = education)) +
-  geom_bar(position = "dodge") +
-  labs(
-    title = "Loan Approval by Education Level",
-    x = "Loan Status",
-    y = "Number of Applicants"
-  ) +
-  scale_fill_manual(
-    values = c(" Graduate" = "#FF7C61", " Not Graduate" = "#50E5C8")
-  ) +
-  theme_minimal()
-```
-
-Approval rates are nearly **identical** for Graduated and Not Graduated applicants, suggesting education likely doesn’t affect loan approval. A Chi-square test will confirm this statistically.
-
-#### Hypotheses:
-- **Null hypothesis (H₀):** Loan approval is independent of education level (Graduated vs Not Graduated).
-- **Alternative hypothesis (H₁):** Loan approval depends on education level; there is an association between education and loan approval.
-
-```{r echo=TRUE}
 edu_table <- table(loan_df$education, loan_df$loan_status)
 print(edu_table)
 
 edu_chi <- chisq.test(edu_table)
 print(edu_chi)
+
+ggplot(loan_df, aes(x = education, fill = loan_status)) +
+  geom_bar(position = "fill") +
+  labs(title = "Loan Approval Rate by Education Level",
+       y = "Proportion",
+       x = "Education Level") +
+  theme_minimal()
 ```
-#### Conclusion
-The Chi-square test yielded a **p-value** of `0.8`. Since this is greater than `0.05`, we fail to reject the null hypothesis, indicating that there is no significant association between education level and loan approval. This confirms that, in this dataset, education does not appear to affect the likelihood of a loan being approved.
+
+Statistical Analysis Breakdown
+
+Contingency Table
+The raw counts show a very similar distribution of approvals and rejections across both groups.Graduate applicants had 1,329 approvals and 728 rejections.Not Graduate applicants had 1,311 approvals and 803 rejections.This similarity suggests the approval rates are nearly identical: ~62.4% for graduate and 62% for non-graduate.
+
+Chi-Square Test
+The test statistic is .083958. This indicates that the data is close to what you would expect.
+The p-value is .772. It is much larger than the standard significance level of .05, we fail to reject the null hypothesis. This is the formal statistical confirmation that there is no significant association between an applicant's education level and their loan status.
+
+Proportion visualization(The bar chart): 
+The stacked bar chart, which shows the proportion of approvals within each education level, visually confirms the statistical finding. The height of the "Approved" segment is virtually the same for both Graduate and Not Graduate bars, indicating that an individual's chance of approval is not meaningfully affected by their educational background.
 
 ### Do people with higher asset values tend to get approved more often?
-Here, we aim to examine whether the value of a person’s assets, including residential, commercial, luxury, and bank assets, individually affects the approval or rejection of a loan. We begin by visualizing the frequency distribution of each type of asset value.
-```{r echo=TRUE}
+```{r Q2, echo=TRUE}
+
+# =========================================================
+# 2 Do people with higher asset values tend to get approved more often?
+# =========================================================
+```{r}
+#Residential Assets 
+wilcox.test(residential_assets_value ~ loan_status, data = loan_df)
+
+# Commercial Assets
+wilcox.test(commercial_assets_value ~ loan_status, data = loan_df)
+
+# Luxury Assets
+wilcox.test(luxury_assets_value ~ loan_status, data = loan_df)
+
+# Bank Assets
+wilcox.test(bank_asset_value ~ loan_status, data = loan_df)
+
+```
+The Wilcoxon Rank sum tests is utilized to compared the different asset types between approved and rejected loan applicants. Across the four asset categories, the p-values were greater than .05, indicating that there are no statistically significant differences in asset distributions between loan approval statuses.
+```{r Q2 Part 2}
+
+shapiro_residential <- shapiro.test(loan_df$residential_assets_value)
+shapiro_commercial  <- shapiro.test(loan_df$commercial_assets_value)
+shapiro_luxury      <- shapiro.test(loan_df$luxury_assets_value)
+shapiro_bank_assets<-shapiro.test(loan_df$bank_asset_value)
+
+
+cat("p-value (Residential Assets):", shapiro_residential$p.value, "\n")
+cat("p-value (Commercial Assets):", shapiro_commercial$p.value, "\n")
+cat("p-value (Luxury Assets):", shapiro_luxury$p.value, "\n")
+cat("p-value (Bank Assets):", shapiro_bank_assets$p.value, "\n")
+
+qqnorm(loan_df$residential_assets_value, 
+       main = "Q-Q Plot of Residential Assets Value")
+qqline(loan_df$residential_assets_value, col = "red", lwd = 2)
+qqnorm(loan_df$commercial_assets_value, 
+       main = "Q-Q Plot of Commercial Assets Value")
+qqline(loan_df$commercial_assets_value, col = "red", lwd = 2)
+qqnorm(loan_df$luxury_assets_value, 
+       main = "Q-Q Plot of Luxury Assets Value")
+qqline(loan_df$luxury_assets_value, col = "red", lwd = 2)
+qqnorm(loan_df$bank_asset_value, 
+       main = "Q-Q Plot of Bank Assets Value")
+qqline(loan_df$bank_asset_value, col = "red", lwd = 2)
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
+
 # 1. Residential Assets Histogram
 hist(loan_df$residential_assets_value,
-     main = "Distribution of Residential Assets Value",
+     main = "Histogram of Residential Assets Value",
      xlab = "Residential Assets Value",
      col = "lightblue",
      border = "black")
 
 # 2. Commercial Assets Histogram
 hist(loan_df$commercial_assets_value,
-     main = "Distribution of Commercial Assets Value",
+     main = "Histogram of Commercial Assets Value",
      xlab = "Commercial Assets Value",
      col = "lightgreen",
      border = "black")
 
 # 3. Luxury Assets Histogram
 hist(loan_df$luxury_assets_value,
-     main = "Distribution of Luxury Assets Value",
+     main = "Histogram of Luxury Assets Value",
      xlab = "Luxury Assets Value",
      col = "pink",
      border = "black")
 
 # 4. Bank Assets Histogram
 hist(loan_df$bank_asset_value,
-     main = "Distribution of Bank Assets Value",
+     main = "Histogram of Bank Assets Value",
      xlab = "Bank Assets Value",
      col = "salmon",
      border = "black")
@@ -161,127 +201,102 @@ hist(loan_df$bank_asset_value,
 # Reset plotting layout to default (1 plot per screen) after generation
 par(mfrow = c(1, 1))
 ```
-Each type of asset value shows a right-skewed distribution, meaning most individuals hold lower asset values while a smaller number possess much higher ones, indicating non-normality. To statistically verify this, we can apply the Shapiro–Wilk test, which checks whether the data follow a normal distribution.
+The shapiro tests all see if those with higher assets are approved compared to those who do not.  Since every p-value is less than the significant level of .05, we reject the null hypothesis and expect those with higher assets to get approved. All the histograms are skewed to the right. This means that most assets are valued at the low end, and extremely high values are rare. The Q-Q plot for the residential assets shows that the points strongly deviate from the line, particularly at the upper end, which is the high asset values. This means that it is not normally distributed. The commercial assets show a similar to residential assets, with a significant upward curve away from the diagonal. This is not normally distributed. The luxury asset Q-Q plots shows the same upward curving shape, which means it is not normally distributed. The Q-Q plot for the bank asset value shows a deviation from the line, which makes it not normally distributed. 
 
-#### Hypotheses:
-- **Null hypothesis (H₀):** The data are normally distributed.
-- **Alternative hypothesis (H₁):** The data are not normally distributed.
-We use this test to confirm whether the visual observation of skewness is statistically significant.
-
-```{r echo=TRUE}
-shapiro.test(loan_df$residential_assets_value)
-shapiro.test(loan_df$commercial_assets_value)
-shapiro.test(loan_df$luxury_assets_value)
-shapiro.test(loan_df$bank_asset_value)
-```
-Since all **p-values** are far below `0.05`, we **reject the null hypothesis** for each test. This indicates that none of the asset value distributions are normally distributed, which is consistent with the right-skewed patterns observed in the histograms. 
-Let's visualize the impact of asset values on loan status using a **box plot**.
-
-```{r echo=TRUE}
-# Convert to long format
-loan_long <- loan_df %>%
-  pivot_longer(
-    cols = c(residential_assets_value, commercial_assets_value, luxury_assets_value, bank_asset_value),
-    names_to = "asset_type",
-    values_to = "asset_value"
-  )
-
-# Boxplots all in one figure
-ggplot(loan_long, aes(x = asset_type, y = asset_value, fill = loan_status)) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +
-  labs(
-    title = "Asset Distributions by Loan Status",
-    x = "Asset Type",
-    y = "Asset Value"
-  ) +
-  theme_minimal() +
-  scale_fill_manual(values = c(" Approved" = "#1b9e77", " Rejected" = "#d95f02"))
-```
-The **median** and **range** of each asset type are similar between `Approved` and `Rejected` loans, suggesting little apparent effect on loan decisions. Since the Shapiro-Wilk test showed that asset values are not normally distributed, we use the Wilcoxon rank-sum test to formally assess differences.
-
-#### Hypotheses for each asset type:
-- **Null hypothesis (H₀):** The distribution of asset values is the same for Approved and Rejected loans.
-- **Alternative hypothesis (H₁):** The distribution of asset values differs between Approved and Rejected loans.
-
-```{r echo=TRUE}
-wilcox.test(residential_assets_value ~ loan_status, data = loan_df)
-wilcox.test(commercial_assets_value ~ loan_status, data = loan_df)
-wilcox.test(luxury_assets_value ~ loan_status, data = loan_df)
-wilcox.test(bank_asset_value ~ loan_status, data = loan_df)
-```
-
-#### Conclusion
-All **p-values** are greater than `0.05`, so we **fail to reject the null hypothesis** for each asset type. This indicates that there is no statistically significant difference in asset values between Approved and Rejected loans, supporting the initial observation that **asset values do not appear to affect loan approval decisions**.
 
 ### Is there a significant difference in average income between approved and rejected applicants?
-Here, we aim to examine whether the person's **annual income** affects the approval or rejection of a loan. We begin by visualizing the frequency distribution of annual income.
-```{r echo=TRUE}
-hist(loan_df$income_annum,
-     main = "Distribution of Annual income",
-     xlab = "Annual income",
-     col = "salmon",
-     border = "black")
-```
-The frequency distribution shows that annual income is **roughly uniform and symmetric**, with **no noticeable skew or extreme outliers**. We can now examine the distribution of annual income for `Approved` and `Rejected` applicants using a box plot.
+```{r Q3, echo=TRUE}
+# Group by loan approval status and extract their annual income data
+approved_income <- loan_df$income_annum[loan_df$loan_status == " Approved"]
+rejected_income <- loan_df$income_annum[loan_df$loan_status == " Rejected"]
+# Calculate each group's mean annual income
+mean_approved <- mean(approved_income, na.rm = TRUE)
+mean_rejected <- mean(rejected_income, na.rm = TRUE)
+cat("Mean annual income of Approved group:", mean_approved, "\n")
+cat("Mean annual income of Rejected group:", mean_rejected, "\n")
 
-```{r echo=TRUE}
-ggplot(loan_df, aes(x = loan_status, y = income_annum, fill = loan_status)) +
-  geom_boxplot() +
-  labs(title = "Annual Distribution by Loan Status", x = "Loan Status", y = "Annual Income") +
-  scale_fill_manual(values = c(" Approved" = "#12362A", " Rejected" = "#8DD9C1"))
+# Conduct hypothesis testing
+t_test_result <- t.test(approved_income, rejected_income)
+print("t-test result：")
+print(t_test_result)
+# Draw the histogram
+hist(approved_income, 
+     col = "#8DD9C1",
+     main = "The distribution of annual income", 
+     xlab = "Annual income", 
+     ylab = "Frequency",
+     breaks = 30)
+hist(rejected_income, 
+     col = "#12362A", 
+     breaks = 30,
+     add = TRUE)
+legend("topright", 
+       legend = c("Approved", "Rejected"), 
+       fill = c("#8DD9C1", "#12362A")) 
+
 ```
-The box plot shows that the income distributions for both `Approved` and `Rejected` applicants are quite similar. The **median** income for both groups is approximately `5 million`, and the small difference in the lower quartiles appears negligible. To statistically verify this observation, we will perform a two-sample t-test to compare the means of the two groups.
+The average annual income of the approved group is `5,025,904`, while that of the rejected group is `5,113,825`, resulting in a mean difference of approximately `87,921`. To determine whether this difference is statistically significant, a Welch Two-Sample t-test was performed.
 
 - **Null Hypothesis (H₀):** There is no significant difference in the average annual income between approved and rejected applicants.
 
 - **Alternative Hypothesis (H₁):** There is a significant difference in the average annual income between approved and rejected applicants.
 
-```{r echo=TRUE}
-approved_income <- loan_df$income_annum[loan_df$loan_status == " Approved"]
-rejected_income <- loan_df$income_annum[loan_df$loan_status == " Rejected"]
-t.test(approved_income, rejected_income)
-```
+The test results showed a **t-value** of `-1` and a **p-value** of `0.3`, which is much greater than the significance level `(α = 0.05)`. This indicates that the difference between the two means is **not statistically significant**. The `95%` confidence interval for the mean difference is `[-260,821, 84,978]`, which includes zero; further supporting the conclusion that the average incomes of the two groups may be equal.
 
-#### Conclusion
-Since the `p-value(0.2)> 0.05`, we **fail to reject the null hypothesis**, indicating that there is no statistically significant difference in mean income between Approved and Rejected applicants.So the data supports the earlier observation from the box plot i.e. annual income does not appear to affect loan approval in this dataset.
+A histogram comparing the income distributions of both groups also shows similar shapes, reinforcing that there is no clear distinction between them.
+
+In conclusion, income alone does not appear to be a strong predictor of loan approval in this dataset.
 
 
 
 ### Is there a correlation between applicant's annual income and loan amount requested?
-Here, we aim to examine whether the **loan amount requested** is influenced by an applicant’s **annual income**. Understanding this relationship helps identify potential **multicollinearity**. Moreover, We already know that annual income is not skewed and roughly uniform and symmetric, we can now visualize the distribution for loan amount requested.
-```{r, echo=TRUE}
-hist(loan_df$loan_amount,
-     main = "Distribution of Loan amount reuqested",
-     xlab = "Loan amount requested",
-     col = "yellow",
-     border = "black")
-```
-The distribution of loan amount is right-skewed and deviates from normality. Therefore, we will first visualize the relationship between annual income and the requested loan amount, and then use Spearman’s correlation test, as it does not assume normality.
-
 ```{r Q4, echo=TRUE}
 annual_income <- loan_df$income_annum
 loan_amount <- loan_df$loan_amount
 
-ggplot(data = loan_df, aes(x = loan_amount, y = income_annum)) +
-  geom_point(color = "#F7AC19") +
-  labs(
-    title = "Scatter plot of Annual Income vs Loan Amount",
-    x = "Loan Amount",
-    y = "Annual Income"
-  ) +
-  theme_minimal()
+# Check whether normal distribution
+shapiro_income <- shapiro.test(annual_income)
+shapiro_loan <- shapiro.test(loan_amount)
+cat("p-value of annual income：", shapiro_income$p.value, "\n")
+cat("p-value of loan amount：", shapiro_loan$p.value, "\n")
+# Choose the correlation coefficient
+if (shapiro_income$p.value > 0.05 & shapiro_loan$p.value > 0.05) {
+  cor_result <- cor.test(annual_income, loan_amount, method = "pearson")
+  cat("Pearson result：\n")
+} else {
+  cor_result <- cor.test(annual_income, loan_amount, method = "spearman")
+  cat("Spearman reslut：\n")
+}
+print(cor_result)
+
+# Draw the plot
+plot(
+  x = annual_income,
+  y = loan_amount,
+  main = "Annual Income vs. Loan Amount Requested",
+  xlab = "Annual Income",
+  ylab = "Loan Amount Requested",
+  pch = 16,
+  col = "#FFC412",
+  cex = 0.8
+)
+# Add the regression line
+abline(lm(loan_amount ~ annual_income), col = "red", lwd = 2)
+legend("topleft", 
+       legend = "regression line", 
+       col = "red", 
+       lty = 1, 
+       lwd = 2)
+
+
+
+
 ```
-A positive correlation is evident, indicating that applicants with higher annual incomes tend to apply for and receive larger loan amounts. We can use a spearman correlation test to verify this. 
+The normality of the data for both annual income and loan amount was tested, and since they did not follow a normal distribution, the Spearman correlation coefficient was used. The resulting `rho = 0.941` indicates a very strong positive correlation between the two variables, with a `p-value < 0.05`, confirming that the relationship is statistically significant.
 
-- **Null Hypothesis (H₀):** There is no relationship between annual income and loan amount among applicants.
+The scatter plot further supports this finding, showing a clear upward trend—loan amounts increase as annual income increases. The red regression line visually emphasizes this strong positive relationship.
 
-- **Alternative Hypothesis (H₁):** Applicants with higher annual incomes tend to apply for and receive larger loan amounts.
-
-```{r echo=TRUE}
-cor.test(annual_income, loan_amount, method = "spearman")
-```
-#### Conclusion:
-The Spearman’s rank correlation test shows a very strong positive correlation between annual income and loan amount `(ρ = 0.941, p < 0.001)`. This indicates that as applicants’ annual income increases, the loan amount they apply for and receive also tends to increase. Since the p-value is far below `0.05`, we reject the null hypothesis and conclude that there is a significant positive relationship between annual income and loan amount. This strong association suggests that the two variables convey similar information.
+In conclusion, Annual income is a key factor influencing the loan amount requested, as the two are strongly and positively correlated.
 
 ### Is there a significant difference in average CIBIL scores between approved and rejected applicants?
 ```{r Q5, echo=TRUE}
@@ -289,11 +304,18 @@ library(ggplot2)
 #CIBIL score frequency distribution
 hist(loan_df$cibil_score, main = "Frequency Distribution of CIBIL Scores", xlab = "CIBIL Score", ylab = "Frequency", breaks = 15, col = "#197571")
 
+#CIBIL score frequency distribution
+loan_df$loan_status <- factor(trimws(loan_df$loan_status))
+ggplot(loan_df, aes(x = cibil_score, fill = loan_status)) +
+  geom_histogram(binwidth = 50, color = "white", alpha = 0.8) +
+  facet_wrap(~ loan_status, scales = "free_y") +
+  labs(title = "CIBIL Score Distribution by Loan Status", x = "CIBIL Score", y = "Frequency", fill = "Loan Status") + scale_fill_manual(values = c("Approved" = "#197571", "Rejected" = "#FFCF85"))
+
 #CIBIL score frequency box chart
 ggplot(loan_df, aes(x = loan_status, y = cibil_score, fill = loan_status)) +
   geom_boxplot() +
   labs(title = "CIBIL Score Distribution by Loan Status", x = "Loan Status", y = "CIBIL Score") +
-  scale_fill_manual(values = c(" Approved" = "#197571", " Rejected" = "#FFCF85"))
+  scale_fill_manual(values = c("Approved" = "#197571", "Rejected" = "#FFCF85"))
 
 #t-test
 t.test(cibil_score ~ loan_status, data = loan_df)
@@ -369,7 +391,7 @@ ggplot(loan_df, aes(x = self_employed, fill = loan_status)) +
     x = "self employment status",
     y = "Number of Applicants"
   ) +
-  scale_fill_manual(values = c(" Approved" = "#F2764E", " Rejected" = "#FAF487")) +
+  scale_fill_manual(values = c("Approved" = "#F2764E", Rejected = "#FAF487")) +
   theme_minimal()
 ```
 Approval rates are nearly **identical** for self-employed and non self-employed applicants, suggesting self-employment likely doesn’t affect loan approval. A Chi-square test will confirm this statistically.
@@ -389,7 +411,7 @@ ggplot(loan_df, aes(x = no_of_dependents, fill = loan_status)) +
     x = "Number of Dependents",
     y = "Number of Applicants"
   ) +
-  scale_fill_manual(values = c(" Approved" = "#0D0942", " Rejected" = "#C4C0F6")) +
+  scale_fill_manual(values = c("Approved" = "#0D0942", "Rejected" = "#C4C0F6")) +
   theme_minimal()
 ```
 The bar chart shows that approval and rejection counts are fairly similar across all dependent categories, with no noticeable trend suggesting that the number of dependents strongly influences loan approval outcomes. While minor variations exist, the approval rate appears consistent across groups, indicating that loan approval is likely independent of the number of dependents. A Chi-square test will confirm this statistically.
@@ -409,7 +431,7 @@ ggplot(loan_df, aes(x = loan_status, y = loan_term, fill = loan_status)) +
     x = "Loan Status",
     y = "Loan Term (Years)"
   ) +
-  scale_fill_manual(values = c(" Approved" = "#98C25F", " Rejected" = "#EB3BA7")) +
+  scale_fill_manual(values = c("Approved" = "#98C25F", "Rejected" = "#EB3BA7")) +
   theme_minimal()
 ```
 The boxplot shows that approved loans have a **wider range** of terms, including very short loans, while rejected loans generally have longer terms. The median loan term for approved loans is `10 years`, compared to `12 years` for rejected loans, indicating that rejected loans tend to have slightly longer terms
