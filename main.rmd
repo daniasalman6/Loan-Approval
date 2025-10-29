@@ -1,5 +1,5 @@
 ---
-title: "Data Science Project - Loan Approval"
+title: "A Data-Driven Study of Loan Approval"
 author: "Alex Biuckians, Armin Soroosh, Dania Salman, Kaipu Liu"
 bibliography: references.bib
 csl: ieee.csl 
