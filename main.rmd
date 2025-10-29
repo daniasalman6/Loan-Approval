@@ -2,7 +2,7 @@
 title: "A Data-Driven Study of Loan Approval"
 author: "Alex Biuckians, Armin Soroosh, Dania Salman, Kaipu Liu"
 bibliography: references.bib
-csl: ieee.csl 
+csl: apa.csl
 link-citations: true 
 output:
   html_document:

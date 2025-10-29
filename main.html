@@ -1614,29 +1614,30 @@ Liu</h4>
 demand for loans continues to rise. Financial institutions receive a
 large number of loan applications each day, making it difficult to
 manage them, particularly when evaluations are done manually and there
-are no reliable methods to assess a candidate’s creditworthiness <span class="citation"><a href="#ref-Mnkandla2024Loan">[1]</a></span>. To
-simplify the process for both applicants and financial institutions, it
-is essential to develop robust evaluation methods that can accurately
-predict a loan applicant’s creditworthiness while minimizing risks for
-lenders. To achieve this, we have decided to explore an existing dataset
-to identify patterns across various features of loan applicants and
-determine which factors have the greatest impact on loan approvals. Once
-these key features are identified, predictive models can be built around
-them, reducing the need for manual evaluation and enabling data-driven
-decision-making based on actual application data.</p>
+are no reliable methods to assess a candidate’s creditworthiness <span class="citation">(<a href="#ref-Mnkandla2024Loan">Mnkandla et al.,
+2024</a>)</span>. To simplify the process for both applicants and
+financial institutions, it is essential to develop robust evaluation
+methods that can accurately predict a loan applicant’s creditworthiness
+while minimizing risks for lenders. To achieve this, we have decided to
+explore an existing dataset to identify patterns across various features
+of loan applicants and determine which factors have the greatest impact
+on loan approvals. Once these key features are identified, predictive
+models can be built around them, reducing the need for manual evaluation
+and enabling data-driven decision-making based on actual application
+data.</p>
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>To investigate the factors that influence loan decisions, we obtained
-a dataset from Kaggle <span class="citation"><a href="#ref-sharma2023loan">[2]</a></span> containing various variables
-for each loan application, such as income, education, CIBIL score, and
-the final loan status (Approved or Rejected). Our goal is to examine
-whether each of these variables has any impact on the loan decision. We
-have formulated around 10 smart questions that explore the potential
-effect of each variable on the final outcome. The insights gained from
-this exploratory analysis will guide the development of predictive
-models capable of accurately determining whether a loan should be
-approved for a given applicant.</p>
+a dataset from Kaggle <span class="citation">(<a href="#ref-sharma2023loan">Sharma, 2023</a>)</span> containing various
+variables for each loan application, such as income, education, CIBIL
+score, and the final loan status (Approved or Rejected). Our goal is to
+examine whether each of these variables has any impact on the loan
+decision. We have formulated around 10 smart questions that explore the
+potential effect of each variable on the final outcome. The insights
+gained from this exploratory analysis will guide the development of
+predictive models capable of accurately determining whether a loan
+should be approved for a given applicant.</p>
 <div id="loading-the-dataset" class="section level3">
 <h3>Loading the Dataset</h3>
 <pre class="r"><code># reading dataset
@@ -2622,19 +2623,15 @@ data-driven basis for future modeling in credit risk evaluation.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
-<div id="refs" class="references csl-bib-body" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-Mnkandla2024Loan" class="csl-entry">
-<div class="csl-left-margin">[1] </div><div class="csl-right-inline">A.
-Z. Mnkandla, B. M. Ndlovu, S. Dube, P. Nyoni, and F. J. Kiwa,
-<span>“Loan eligibility system using machine learning,”</span> in
-<em>Proceedings of the 7th european conference on industrial engineering
-and operations management</em>, Augsburg, Germany: IEOM Society
-International, 2024. doi: <a href="https://doi.org/10.46254/EU07.20240079">10.46254/EU07.20240079</a>.</div>
+Mnkandla, A. Z., Ndlovu, B. M., Dube, S., Nyoni, P., &amp; Kiwa, F. J.
+(2024). Loan eligibility system using machine learning. <em>Proceedings
+of the 7th European Conference on Industrial Engineering and Operations
+Management</em>. <a href="https://doi.org/10.46254/EU07.20240079">https://doi.org/10.46254/EU07.20240079</a>
 </div>
 <div id="ref-sharma2023loan" class="csl-entry">
-<div class="csl-left-margin">[2] </div><div class="csl-right-inline">A.
-Sharma, <span>“Loan approval prediction dataset.”</span> 2023.
-Available: <a href="https://www.kaggle.com/datasets/architsharma01/loan-approval-prediction-dataset/data">https://www.kaggle.com/datasets/architsharma01/loan-approval-prediction-dataset/data</a></div>
+Sharma, A. (2023). <em>Loan approval prediction dataset</em>. <a href="https://www.kaggle.com/datasets/architsharma01/loan-approval-prediction-dataset/data">https://www.kaggle.com/datasets/architsharma01/loan-approval-prediction-dataset/data</a>
 </div>
 </div>
 </div>
