@@ -24,8 +24,8 @@ library(ezids)
 library(dplyr) 
 library(tidyr)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
-knitr::opts_chunk$set(warning = F, results="hide", message = F)
-#knitr::opts_chunk$set(warning = F, message = F)
+#knitr::opts_chunk$set(warning = F, results="hide", message = F)
+knitr::opts_chunk$set(warning = F, message = F)
 options(scientific=T, digits = 3) 
 # options(scipen=9, digits = 3) 
 # ‘scipen’: integer. A penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferred unless it is more than ‘scipen’ digits wider.
@@ -266,7 +266,7 @@ Since the `p-value(0.2)> 0.05`, we **fail to reject the null hypothesis**, indic
 Here, we aim to examine whether the **loan amount requested** is influenced by an applicant’s **annual income**. Understanding this relationship helps identify potential **multicollinearity**. Moreover, We already know that annual income is not skewed and roughly uniform and symmetric, we can now visualize the distribution for loan amount requested.
 ```{r, echo=TRUE}
 hist(loan_df$loan_amount,
-     main = "Distribution of Loan amount reuqested",
+     main = "Distribution of Loan amount requested",
      xlab = "Loan amount requested",
      col = "yellow",
      border = "black")
@@ -477,5 +477,16 @@ t.test(loan_term ~ loan_status, data = loan_df, tail="greater")
 ```
 #### Conclusion
 The two-sample t-test indicates a significant difference in means (`p < 0.05`) so we can reject the null hypothesis, with approved loans having a shorter average term (`10.4 years`) than rejected loans (`11.7 years`). The `95%` confidence interval for the mean difference is `-1.67 to -0.988` (the interval doesn't have 0), confirming that approved loans tend to have shorter terms.
+
+## Overall Findings and Future Work
+The exploratory data analysis and hypothesis testing conducted in this study provide several key insights into the factors influencing loan approval outcomes. The results indicate that **CIBIL score** serves as a significant determinant of approval decisions, with approved applicants demonstrating notably higher average scores than rejected ones. This reinforces the importance of an applicant’s creditworthiness in lending assessments. Additionally, the analysis revealed that **loan term** plays a critical role, as approved loans tend to have **shorter durations**, suggesting that lenders may prefer applicants seeking lower-risk, shorter-term loans.
+
+While **annual income** exhibited a strong positive correlation with the **loan amount requested**, it did not display a significant direct relationship with loan approval status. This finding implies that although applicants with higher incomes tend to request larger loans, income alone may not substantially affect the likelihood of approval once other financial indicators are considered. Thus, **CIBIL score** and **loan term** emerge as the most impactful variables for understanding and predicting loan approval decisions, whereas **annual income** may serve as a supporting predictor variable rather than a primary determinant.
+
+In contrast, variables such as **assets value**, **loan amount requested**, and **employment status** did **not exhibit a notable impact** on loan approval outcomes during this exploratory phase. While these features may still add some background information, they appear to play a limited role in influencing the approval decision compared to credit and term-related variables.
+
+Future work should focus on developing **predictive models** to validate these findings and quantify the relative influence of key variables. Variables such as CIBIL score, loan term, and annual income can be incorporated into classification models such as linear and logistic regression to predict loan approval outcomes. 
+
+Overall, this study establishes a foundational understanding of the most influential factors affecting loan approval and provides a data-driven basis for future modeling in credit risk evaluation.
 
 ## References
