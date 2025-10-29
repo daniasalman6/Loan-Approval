@@ -1,6 +1,9 @@
 ---
 title: "Data Science Project - Loan Approval"
 author: "Alex Biuckians, Armin Soroosh, Dania Salman, Kaipu Liu"
+bibliography: references.bib
+csl: ieee.csl 
+link-citations: true 
 output:
   html_document:
     code_folding: hide
@@ -21,15 +24,20 @@ library(ezids)
 library(dplyr) 
 library(tidyr)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
-#knitr::opts_chunk$set(warning = F, results="hide", message = F)
-knitr::opts_chunk$set(warning = F, message = F)
+knitr::opts_chunk$set(warning = F, results="hide", message = F)
+#knitr::opts_chunk$set(warning = F, message = F)
 options(scientific=T, digits = 3) 
 # options(scipen=9, digits = 3) 
 # ‘scipen’: integer. A penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferred unless it is more than ‘scipen’ digits wider.
 # use scipen=999 to prevent scientific notation at all times
 ```
+## Abstract
+With increasing economic challenges and daily financial demands, the demand for loans continues to rise. Financial institutions receive a large number of loan applications each day, making it difficult to manage them, particularly when evaluations are done manually and there are no reliable methods to assess a candidate’s creditworthiness [@Mnkandla2024Loan]. To simplify the process for both applicants and financial institutions, it is essential to develop robust evaluation methods that can accurately predict a loan applicant’s creditworthiness while minimizing risks for lenders. To achieve this, we have decided to explore an existing dataset to identify patterns across various features of loan applicants and determine which factors have the greatest impact on loan approvals. Once these key features are identified, predictive models can be built around them, reducing the need for manual evaluation and enabling data-driven decision-making based on actual application data.
 
-## Loading the Dataset
+## Introduction
+To investigate the factors that influence loan decisions, we obtained a dataset from Kaggle [@sharma2023loan] containing various variables for each loan application, such as income, education, CIBIL score, and the final loan status (Approved or Rejected). Our goal is to examine whether each of these variables has any impact on the loan decision. We have formulated around 10 smart questions that explore the potential effect of each variable on the final outcome. The insights gained from this exploratory analysis will guide the development of predictive models capable of accurately determining whether a loan should be approved for a given applicant.
+
+### Loading the Dataset
 ```{r read_dataset, echo=TRUE}
 # reading dataset
 loan_df <- data.frame(read.csv("loan_approval_dataset.csv"))
@@ -44,7 +52,7 @@ The dataset has **4269 observations** with **13 variables**
 ## Data Cleaning & Summary
 
 ### subsetting data and converting categorical variables to factor
-Removing loan_id column since it only serves as a unique identifier and does not contribute to the analysis. Furthermore, converting several numeric variables into factors, as they represent categorical information rather than continuous numerical values.
+Removing `loan_id` column since it only serves as a unique identifier and does not contribute to the analysis. Furthermore, converting several numeric variables into factors, as they represent categorical information rather than continuous numerical values.
 ```{r data_cleaning, echo=TRUE}
 loan_df <- subset(loan_df, select = -c(loan_id))
 
@@ -55,15 +63,22 @@ loan_df$self_employed = as.factor(loan_df$self_employed)
 loan_df$loan_status = as.factor(loan_df$loan_status)
 str(loan_df)
 ```
-After conversion, the dataset contains four categorical variables:
+After conversion, we have the following variables in the dataset:
 
-- **no_of_dependents:** Number of dependents the applicant has (`6` categories: `0`, `1`, `2`, `3`, `4`, `5`)
+#### Variables in dataset
+```{r echo=TRUE, results='markup'}
+library(knitr)
 
-- **education:** Applicant’s level of education (`2` categories: `Graduate`, `Not Graduate`)
+# Sample data frame
+loan_data <- data.frame(
+  Variable = c("no_of_dependents", "education", "self_employed", "income_annum", "loan_amount", "loan_term", "cibil_score", "residential_assets_value", "commercial_assets_value", "luxury_assets_value", "bank_asset_value", "loan_status"),
+  Description = c("Number of dependents an applicant has ranging from 0 to 5", "Education level (Graduate or Not Graduate)", "Whether the applicant works independently or for an employer", "Annual income of applicant", "Amount of loan requested", "The number of years in which the applicant will repay the loan","Credit score indicating applicants history of repayment", "Value of applicant's residential assets if any", "Value of applicant's commercial assets if any", "Value of applicant's luxury assets if any", "Value of applicant's bank assets if any", "Target variable indicating whether the loan was Approved or Rejected"),
+  Type = c("Categorical", "Categorical", "Categorical", "Numeric", "Numeric", "Numeric", "Numeric", "Numeric", "Numeric", "Numeric", "Numeric", "Categorical")
+)
 
-- **self_employed:** Whether the applicant is self-employed (`2` categories: `Yes`, `No`)
-
-- **loan_status:** Loan approval status — this is the target variable (`2` categories: `Approved`, `Rejected`)
+# Create table
+kable(loan_data)
+```
 
 ### Finding NA values
 ```{r, echo=TRUE}
@@ -361,6 +376,7 @@ ggplot(subset(loan_df, trimws(loan_status) == "Approved"), aes(x = loan_term, y 
 The correlation coefficient of `0.21` shows a weak but positive relationship where approved candidates with higher CIBIL scores have a slightly higher tendency to approved for longer loan terms. And the p-value is very small, `2e-16`, meaning that the correlation coefficient is unlikely due to chance.
 
 ### Does self-employment status affect loan approval?
+Here, we aim to examine whether the person's employment status affects the approval or rejection of a loan. We begin by visualizing the distribution of approved and rejected applications for each employment group using a bar chart.
 ```{r Q8, echo=TRUE}
 ggplot(loan_df, aes(x = self_employed, fill = loan_status)) +
   geom_bar(position = "dodge") +
@@ -374,10 +390,15 @@ ggplot(loan_df, aes(x = self_employed, fill = loan_status)) +
 ```
 Approval rates are nearly **identical** for self-employed and non self-employed applicants, suggesting self-employment likely doesn’t affect loan approval. A Chi-square test will confirm this statistically.
 
+#### Hypotheses:
+- **Null hypothesis (H₀):** Loan approval is independent of employment status
+- **Alternative hypothesis (H₁):** Loan approval depends on employment status; there is an association between employment status and loan approval.
+
 ```{r, echo=TRUE}
 contable <- table(loan_df$self_employed, loan_df$loan_status)
 chisq.test(contable)
 ```
+#### Conclusion
 The Chi-square test (`p = 1`) also shows no significant association between self-employment status and loan approval. This confirms that self-employment does not affect the likelihood of loan approval in this dataset.
 
 ### Does the number of dependents affect approval of loans?
@@ -419,3 +440,5 @@ The boxplot shows that approved loans have a **wider range** of terms, including
 t.test(loan_term ~ loan_status, data = loan_df)
 ```
 The two-sample t-test indicates a significant difference in means (`p < 0.05`), with approved loans having a shorter average term (`10.4 years`) than rejected loans (`11.7 years`). The `95%` confidence interval for the mean difference is `-1.69 to -1.01` (the interval doesn't have 0), confirming that approved loans tend to have shorter terms.
+
+## References
