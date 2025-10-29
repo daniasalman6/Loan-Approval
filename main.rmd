@@ -284,6 +284,7 @@ cor.test(annual_income, loan_amount, method = "spearman")
 The Spearman’s rank correlation test shows a very strong positive correlation between annual income and loan amount `(ρ = 0.941, p < 0.001)`. This indicates that as applicants’ annual income increases, the loan amount they apply for and receive also tends to increase. Since the p-value is far below `0.05`, we reject the null hypothesis and conclude that there is a significant positive relationship between annual income and loan amount. This strong association suggests that the two variables convey similar information.
 
 ### Is there a significant difference in average CIBIL scores between approved and rejected applicants?
+Here, we are investigating to see if there is a significant difference in CIBIL Scores of Approved and Rejected candidates. First we plot the entire distribution to identify outliers then we plot a chart showing the Approved and Rejected populations.
 ```{r Q5, echo=TRUE}
 library(ggplot2)
 #CIBIL score frequency distribution
@@ -299,11 +300,19 @@ ggplot(loan_df, aes(x = loan_status, y = cibil_score, fill = loan_status)) +
 t.test(cibil_score ~ loan_status, data = loan_df)
 
 ```
+
+#### Hypotheses:
+- **Null hypothesis (H₀):** The average CIBIL Scores for Approved and Rejected applicants are equal.
+- **Alternative hypothesis (H₁):** The average CIBIL Scores for Approved and Rejected applicants are not equal.
+We use this test to confirm whether the CIBIL Scores for the Approved and Rejected applicants are statistically significantly different or the same.
+
+#### Conclusion
 The overall CIBIL score frequency distribution shows no apparent outliers. The individual distributions for approved and rejected loans show a few outliers, but it is not necessary to remove them. Even though the outliers are dragging the two means closer to each other, the means are still significantly different even when including them in the t-test.
 
 There is a significant difference in CIBIL scores between approved and rejected applicants because the p-value, `2e-16`, is much lower than the standard alpha threshold of `0.05`. This allows us to reject the null hypothesis that the two means of approved and rejected applicants are **equal**.
 
 ### For rejected loans, is there a significant difference in the mean CIBIL score between applicants with shorter loan term loans (<=10 years) versus longer term loans(>10 years)?
+Here, we are investigating to see if there is a significant difference in CIBIL Scores in the Rejected applicant population depending if they want a short (less than or equal to 10 years) vs longer term loan (greater than 10 years). First we plot the entire distribution to identify outliers then we plot a chart showing the Rejected population with shorter and longer term loans.
 ```{r Q6, echo=TRUE}
 
 #created subsets for shorter and longer loans then ran t-test
@@ -339,12 +348,18 @@ t.test(rejected_shorter$cibil_score, rejected_longer$cibil_score)
 t.test(cleaned_shorter_cibil, cleaned_longer_cibil)
 
 ```
+#### Hypotheses:
+- **Null hypothesis (H₀):** The average CIBIL Scores of Rejected applicants with shorter loan terms (less than or equal to 10 years) is equal to that of Rejected applicants with longer loan term (greater than 10 years).
+- **Alternative hypothesis (H₁):** The average CIBIL Scores of Rejected applicants with shorter loan terms (less than or equal to 10 years) is not equal to that of Rejected applicants with longer loan term (greater than 10 years).
+We use this test to confirm whether the CIBIL Scores for the Rejected applicants with shorter loan terms and longer loan terms are statistically significantly different or the same.
 
+#### Conclusion
 The overall loan terms frequency distribution shows no apparent outliers however there are a few in the shorter and longer loan term groups. Having this said, even when removing these outliers there no significant differences found between the two groups and their respective CIBIL scores.
 
 There is not a significant difference in CIBIL scores between shorter `(<= 10 years)` and longer `(>10 years)` term loans within the rejected group of applicants because the **p-value**, `1`, is much higher than the standard alpha threshold of `0.05`. This allows us to accept the null hypothesis that the two means of shorter and longer term loans of rejected applicants are equal.
 
-### Is there a correlation between the CIBIL Score and the Loan Term among those whose loans are approved?  
+### Is there a correlation between the CIBIL Score and the Loan Term among those whose loans are approved?
+Here, we are investigating whether or not there is a correlation among Approved applicants between the two variables, CIBIL Score and Loan Term (Years). A correlation test is conducted to determine the correlation coefficient and p-value. A graph is also plotted showing the relationship between CIBIL Score and Loan Term.
 ```{r Q7, echo=TRUE}
 
 #correlation coefficient
@@ -357,7 +372,12 @@ cor.test(loan_df[trimws(loan_df$loan_status) == "Approved", "cibil_score"], loan
 ggplot(subset(loan_df, trimws(loan_status) == "Approved"), aes(x = loan_term, y = cibil_score)) + geom_point(alpha = 0.4, color = "#AAE5D8") + geom_smooth(method = "lm", se = FALSE, color = "#061411") + labs(title = "CIBIL Score vs. Loan Term for Approved Loans", x = "Loan Term (Years)", y = "CIBIL Score")
 
 ```
+#### Hypotheses:
+- **Null hypothesis (H₀):** There is no correlation between CIBIL Score and Loan Term (Years) of Approved applicants.
+- **Alternative hypothesis (H₁):** There is a correlation between CIBIL Score and Loan Term (Years) of Approved applicants.
+We use this test to confirm whether there is a correlation between CIBIL Scores and loan terms for the applicants who were Approved for their loan.
 
+#### Conclusion
 The correlation coefficient of `0.21` shows a weak but positive relationship where approved candidates with higher CIBIL scores have a slightly higher tendency to approved for longer loan terms. And the p-value is very small, `2e-16`, meaning that the correlation coefficient is unlikely due to chance.
 
 ### Does self-employment status affect loan approval?
