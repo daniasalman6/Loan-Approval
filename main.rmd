@@ -489,4 +489,71 @@ Future work should focus on developing **predictive models** to validate these f
 
 Overall, this study establishes a foundational understanding of the most influential factors affecting loan approval and provides a data-driven basis for future modeling in credit risk evaluation.
 
+**Final Q2**
+
+```{r}
+chisq.test(loan_df$loan_status, loan_df$cibil_score)
+chisq.test(loan_df$loan_status, loan_df$income_annum)
+chisq.test(loan_df$loan_status, loan_df$loan_amount)
+```
+
+After doing Chi-squared testing on all three variables (cibil credit score, annual income, and loan amount), cibil credit score was the only variable with a low p-value meaning we reject the null hypothesis that cibil score and loan approval are independent (have no relationship). We are forced to accept the null hypotheses that annual income and loan apporval are independent and that loan amount and loan approval are independent.
+
+```{r}
+library(regclass)
+library(ResourceSelection)
+
+LogitM1 <- glm(loan_status ~ cibil_score, data = loan_df, family = "binomial")
+summary(LogitM1)
+
+#evaluation step - confidence interval
+confint.default(LogitM1)
+
+#evaluation step - confusion matrix
+confusion_matrix(LogitM1)
+
+#evaluation step - Hosmer and Lemeshow
+hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM1))
+
+#evaluation step - McFadden R^2
+null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
+mcFadden = 1 - logLik(LogitM1) / logLik(null_tLogit)
+```
+
+```{r}
+LogitM2 <- glm(loan_status ~ cibil_score + income_annum, data = loan_df, family = "binomial")
+summary(LogitM2)
+
+#evaluation step - confidence interval
+confint.default(LogitM2)
+
+#evaluation step - confusion matrix
+confusion_matrix(LogitM2)
+
+#evaluation step - Hosmer and Lemeshow
+hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM2))
+
+#evaluation step - McFadden R^2
+null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
+mcFadden = 1 - logLik(LogitM2) / logLik(null_tLogit)
+```
+
+```{r}
+LogitM3 <- glm(loan_status ~ cibil_score + income_annum + loan_amount, data = loan_df, family = "binomial")
+summary(LogitM3)
+
+#evaluation step - confidence interval
+confint.default(LogitM3)
+
+#evaluation step - confusion matrix
+confusion_matrix(LogitM3)
+
+#evaluation step - Hosmer and Lemeshow
+hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM3))
+
+#evaluation step - McFadden R^2
+null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
+mcFadden = 1 - logLik(LogitM3) / logLik(null_tLogit)
+```
+
 ## References
