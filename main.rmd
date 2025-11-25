@@ -518,6 +518,7 @@ hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM1))
 #evaluation step - McFadden R^2
 null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
 mcFadden = 1 - logLik(LogitM1) / logLik(null_tLogit)
+cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
 ```
 
 ```{r}
@@ -536,6 +537,7 @@ hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM2))
 #evaluation step - McFadden R^2
 null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
 mcFadden = 1 - logLik(LogitM2) / logLik(null_tLogit)
+cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
 ```
 
 ```{r}
@@ -554,6 +556,7 @@ hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM3))
 #evaluation step - McFadden R^2
 null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
 mcFadden = 1 - logLik(LogitM3) / logLik(null_tLogit)
+cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
 ```
 
 ## References
