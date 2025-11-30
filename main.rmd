@@ -697,6 +697,12 @@ print(paste("Accuracy:", accuracy))
 ```
 We trained a Support Vector Machine to classify observations into the two k-means clusters. The model achieved an accuracy of 99.65%, with only 3 misclassifications out of 847 test observations. The confusion matrix shows very strong separation between the clusters, indicating that the cluster structure found by k-means is highly stable and predictable from the input features. This validates that the clusters represent genuinely distinct segments rather than random partitions.
 
+
+**SMART QUESTION 2: **
+Do 1, 2, or 3 predictors (cibil credit score, annual income, and loan amount) have a better indicator on loan approval.
+
+First let us run Chi-squared tests to determine dependance of variables.
+
 ```{r}
 chisq.test(loan_df$loan_status, loan_df$cibil_score)
 chisq.test(loan_df$loan_status, loan_df$income_annum)
@@ -764,5 +770,8 @@ null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
 mcFadden = 1 - logLik(LogitM3) / logLik(null_tLogit)
 cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
 ```
+
+The third model that incorporated all three predictors (cibil credit score, annual income, and loan amount) had the highest R-squared value of 0.63 compared to the other two models' value of 0.623. The third model also had an accuracy of 92.1%, a slight increase from the first and second model's accuracy of 91.8%. Additionally, because because annual income amount was added as a feature to the second model and did not see a change throughout different model evaluation steps, it can be stated that income_annum is not a significant predictor.
+
 >>>>>>> main
 ## References
