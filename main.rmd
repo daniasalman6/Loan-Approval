@@ -489,6 +489,7 @@ Future work should focus on developing **predictive models** to validate these f
 
 Overall, this study establishes a foundational understanding of the most influential factors affecting loan approval and provides a data-driven basis for future modeling in credit risk evaluation.
 
+<<<<<<< HEAD
 **Final Q2**
 
 ```{r}
@@ -559,4 +560,209 @@ mcFadden = 1 - logLik(LogitM3) / logLik(null_tLogit)
 cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
 ```
 
+=======
+## Data Modeling
+
+### Q: Can we segment borrowers into distinct groups based on their financial profiles to better understand different applicant types?
+
+#### Filtering numeric columns
+```{r echo=TRUE}
+data_kmeans <- loan_df[, c("income_annum", "loan_amount", "cibil_score", "residential_assets_value", "commercial_assets_value", "luxury_assets_value", "bank_asset_value")]
+cor(data_kmeans)
+```
+
+The correlation matrix shows that all asset variables are positively and strongly related, so I combined them into a single total asset value to avoid redundancy.
+
+```{r echo=TRUE}
+str(loan_df)
+loan_df$combined_asset_value <- rowSums(
+  loan_df[, c("residential_assets_value",
+              "commercial_assets_value",
+              "luxury_assets_value",
+              "bank_asset_value")],
+  na.rm = TRUE
+)
+
+data_kmeans <- loan_df[, c("loan_amount", "combined_asset_value", "cibil_score", "income_annum")]
+str(data_kmeans)
+```
+
+#### Scaling data
+```{r echo=TRUE}
+data_kmeans_scaled <- scale(data_kmeans)
+```
+
+#### Deciding on optimal number of clusters using elbow plot
+```{r echo=TRUE}
+wss <- sapply(1:10, function(k){
+  kmeans(data_kmeans_scaled, k, nstart = 20)$tot.withinss
+})
+
+plot(1:10, wss, type = "b",
+     xlab = "Number of clusters (k)",
+     ylab = "Total within-cluster sum of squares")
+```
+
+The elbow plot indicates a distinct inflection point at `k = 2`, which supports selecting two clusters for the analysis.
+
+#### Run k-means with k=2
+
+```{r echo=TRUE}
+set.seed(123) 
+k <- 2
+
+km <- kmeans(data_kmeans_scaled, centers = k, nstart = 25)
+```
+
+
+#### Calculating silhouette score of the cluster
+```{r echo=TRUE}
+library(cluster)
+
+sil <- silhouette(km$cluster, dist(data_kmeans_scaled))
+mean(sil[, 3])  
+```
+
+The silhouette score of 0.423 indicates that the two borrower clusters are reasonably well-separated, meaning the clustering has captured meaningful differences in income, assets, loan amount, and CIBIL score. While the groups are not perfectly distinct, the separation is strong enough to provide useful insights into different borrower profiles.
+
+#### Creating cluster profiles
+
+Attaching cluster labels to both the scaled and original datasets, then calculating the average unscaled feature values for each cluster to create interpretable cluster profiles.
+
+```{r echo=TRUE}
+# df_scaled already contains cluster labels
+df_scaled <- as.data.frame(data_kmeans_scaled)
+df_scaled$cluster <- factor(km$cluster)
+
+# -----------------------
+# 1. Add cluster labels to ORIGINAL data
+# -----------------------
+df_unscaled <- data_kmeans      # original (unscaled) data
+df_unscaled$cluster <- factor(km$cluster)
+
+# -----------------------
+# 2. Compute cluster profiles using unscaled values
+# -----------------------
+cluster_profiles_unscaled <- df_unscaled %>%
+  group_by(cluster) %>%
+  summarise(
+    loan_amount = mean(loan_amount),
+    cibil_score = mean(cibil_score),
+    income_annum = mean(income_annum),
+    combined_asset_value = mean(combined_asset_value)
+  )
+
+print(cluster_profiles_unscaled)
+```
+
+#### Cluster interpretation
+- **Cluster 1: High-value borrowers:** This cluster represents financially strong borrowers who request very large loans and possess significant asset holdings and high annual income. Despite having slightly lower CIBIL scores on average, their high net worth and strong cash flow make them lower risk from a collateral perspective.
+
+- **Cluster 2: Moderate-value borrowers:** This cluster consists of moderate-income, moderate-asset borrowers who apply for smaller loans and have slightly better credit scores. Their financial profile is less substantial than Cluster 1, but their stronger CIBIL scores might indicate better repayment discipline.
+
+These differences suggest that the clustering effectively separates borrowers based on financial strength and borrowing patterns.
+
+#### SVM classification to validate cluster separability
+
+```{r echo=TRUE}
+library(caret)
+library(e1071)
+
+# Combine original features with cluster labels
+cluster_data <- df_unscaled   # df_unscaled already includes: loan_amount, combined_asset_value, cibil_score, income_annum, cluster
+
+set.seed(123)
+
+# 80/20 train-test split (stratified by cluster)
+index <- createDataPartition(cluster_data$cluster, p = 0.8, list = FALSE)
+train_data <- cluster_data[index, ]
+test_data  <- cluster_data[-index, ]
+
+table(cluster_data$cluster)    # Check class balance
+
+svm_model <- svm(
+  cluster ~ loan_amount + combined_asset_value + cibil_score + income_annum,
+  data = train_data,
+  kernel = "radial",
+  class.weights = table(cluster_data$cluster) / nrow(cluster_data)
+)
+
+predictions <- predict(svm_model, newdata = test_data)
+
+confusion_matrix <- table(predictions, test_data$cluster)
+print(confusion_matrix)
+
+accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+print(paste("Accuracy:", accuracy))
+```
+We trained a Support Vector Machine to classify observations into the two k-means clusters. The model achieved an accuracy of 99.65%, with only 3 misclassifications out of 847 test observations. The confusion matrix shows very strong separation between the clusters, indicating that the cluster structure found by k-means is highly stable and predictable from the input features. This validates that the clusters represent genuinely distinct segments rather than random partitions.
+
+```{r}
+chisq.test(loan_df$loan_status, loan_df$cibil_score)
+chisq.test(loan_df$loan_status, loan_df$income_annum)
+chisq.test(loan_df$loan_status, loan_df$loan_amount)
+```
+
+After doing Chi-squared testing on all three variables (cibil credit score, annual income, and loan amount), cibil credit score was the only variable with a low p-value meaning we reject the null hypothesis that cibil score and loan approval are independent (have no relationship). We are forced to accept the null hypotheses that annual income and loan apporval are independent and that loan amount and loan approval are independent.
+
+```{r}
+library(regclass)
+library(ResourceSelection)
+
+LogitM1 <- glm(loan_status ~ cibil_score, data = loan_df, family = "binomial")
+summary(LogitM1)
+
+#evaluation step - confidence interval
+confint.default(LogitM1)
+
+#evaluation step - confusion matrix
+confusion_matrix(LogitM1)
+
+#evaluation step - Hosmer and Lemeshow
+hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM1))
+
+#evaluation step - McFadden R^2
+null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
+mcFadden = 1 - logLik(LogitM1) / logLik(null_tLogit)
+cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
+```
+
+```{r}
+LogitM2 <- glm(loan_status ~ cibil_score + income_annum, data = loan_df, family = "binomial")
+summary(LogitM2)
+
+#evaluation step - confidence interval
+confint.default(LogitM2)
+
+#evaluation step - confusion matrix
+confusion_matrix(LogitM2)
+
+#evaluation step - Hosmer and Lemeshow
+hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM2))
+
+#evaluation step - McFadden R^2
+null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
+mcFadden = 1 - logLik(LogitM2) / logLik(null_tLogit)
+cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
+```
+
+```{r}
+LogitM3 <- glm(loan_status ~ cibil_score + income_annum + loan_amount, data = loan_df, family = "binomial")
+summary(LogitM3)
+
+#evaluation step - confidence interval
+confint.default(LogitM3)
+
+#evaluation step - confusion matrix
+confusion_matrix(LogitM3)
+
+#evaluation step - Hosmer and Lemeshow
+hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM3))
+
+#evaluation step - McFadden R^2
+null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
+mcFadden = 1 - logLik(LogitM3) / logLik(null_tLogit)
+cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
+```
+>>>>>>> main
 ## References
