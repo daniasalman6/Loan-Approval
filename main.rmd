@@ -626,3 +626,83 @@ print(paste("Accuracy:", accuracy))
 We trained a Support Vector Machine to classify observations into the two k-means clusters. The model achieved an accuracy of 99.65%, with only 3 misclassifications out of 847 test observations. The confusion matrix shows very strong separation between the clusters, indicating that the cluster structure found by k-means is highly stable and predictable from the input features. This validates that the clusters represent genuinely distinct segments rather than random partitions.
 
 ## References
+
+Do 1, 2, or 3 predictors (cibil credit score, annual income, and loan amount) have a better indicator on loan approval.
+
+Null Hypothesis: H0 = All three models are equally effective indicators, or the simplest model is the best since it factors in adding more variables (AIC1≈AIC2≈AIC3)  
+Alternative Hypothesis: HA= the model with the minimum AIC is the best indicator, demonstrating a statistically superior balance of fit and model simplicity compared to the other two.
+
+First let us run Chi-squared tests to determine dependence of variables.
+
+```{r}
+chisq.test(loan_df$loan_status, loan_df$cibil_score)
+chisq.test(loan_df$loan_status, loan_df$income_annum)
+chisq.test(loan_df$loan_status, loan_df$loan_amount)
+```
+
+These tests see if two variables are significantly associated with each other. These Chi-squared test on the three variable, CIBIL credit score, annual income, and loan amount, indicate that the CIBIL credit score was the only variable with a  p-value lower than the standard significance of .05, the p-value being 2.2e-16. This means we reject the null hypothesis that that CIBIL score and loan approval are independent and have no relationship and that the CIBIL credit score is dependent on the loan status.  We fail to reject the null hypotheses for annual income and loan amount compared to loan status, as both p-values are greater than .05, the annual income p-value being .6853, and the loan amount p-value being .8637. This means that the annual income and loan approval are independent and that loan amount and loan approval are independent.
+
+```{r}
+library(regclass)
+library(ResourceSelection)
+
+LogitM1 <- glm(loan_status ~ cibil_score, data = loan_df, family = "binomial")
+summary(LogitM1)
+
+#evaluation step - confidence interval
+confint.default(LogitM1)
+
+#evaluation step - confusion matrix
+confusion_matrix(LogitM1)
+
+#evaluation step - Hosmer and Lemeshow
+hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM1))
+
+#evaluation step - McFadden R^2
+null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
+mcFadden = 1 - logLik(LogitM1) / logLik(null_tLogit)
+cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
+```
+
+```{r}
+LogitM2 <- glm(loan_status ~ cibil_score + income_annum, data = loan_df, family = "binomial")
+summary(LogitM2)
+
+#evaluation step - confidence interval
+confint.default(LogitM2)
+
+#evaluation step - confusion matrix
+confusion_matrix(LogitM2)
+
+#evaluation step - Hosmer and Lemeshow
+hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM2))
+
+#evaluation step - McFadden R^2
+null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
+mcFadden = 1 - logLik(LogitM2) / logLik(null_tLogit)
+cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
+```
+
+```{r}
+LogitM3 <- glm(loan_status ~ cibil_score + income_annum + loan_amount, data = loan_df, family = "binomial")
+summary(LogitM3)
+
+#evaluation step - confidence interval
+confint.default(LogitM3)
+
+#evaluation step - confusion matrix
+confusion_matrix(LogitM3)
+
+#evaluation step - Hosmer and Lemeshow
+hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM3))
+
+#evaluation step - McFadden R^2
+null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
+mcFadden = 1 - logLik(LogitM3) / logLik(null_tLogit)
+cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
+```
+
+All three models are highly significant to affect on loan approval, as they all have p-values less than the standard level of statistical significance of .05. The first model shows only the CIBIL score. Since it is highly significant with an estimate of -.021534, this means that the as the CIBIL score increases, the odds of the loan being rejected, decreases. The McFadden R^2 of .62 shows that the CIBIL scores explains a large portion of the variance of loan status. The AIC of 2155.6 indicates that this model is the middle value, meaning it The addition of annual income was added to the second model and failed to provide a unique statistically significant contribution, as evidenced by a lack of change in the valuation step. The annual income coefficient is not statistically significant at .706 meaning that the Annual Income adds very little information that is new. The AIC is 2157.4, which is the worst model of the three. The minimal gain is not worth adding the parameter.  The third model that incorporated all three predictors, that being CIBIL credit score, annual income, and loan amount, had the highest R-squared value of 0.63 compared to the other two models' value of 0.623. All three coefficients are now all highly significant, as the CIBIL score has a coefficient at 2e<-116, annual income is p=2.11e-13, and loan amount is p=1.01e-14. The third model also had an accuracy of 92.1%, a slight increase from the first and second model's accuracy of 91.8%. The third model also has the lowest AIC score at 2096.9.
+
+To answer the question that is posed, we reject the null hypothesis and state that Model3 with the three predictors, which include CIBIL score, annual income, and loan amount, is the best predictor and it outweighs the penalty of adding more parameters. Since M3 has the highest McFadden R^2, it shows that Model3 accounts for a slightly greater proportion of variability in loan approval status than the other models.
+
