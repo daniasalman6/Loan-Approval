@@ -625,6 +625,84 @@ print(paste("Accuracy:", accuracy))
 ```
 We trained a Support Vector Machine to classify observations into the two k-means clusters. The model achieved an accuracy of 99.65%, with only 3 misclassifications out of 847 test observations. The confusion matrix shows very strong separation between the clusters, indicating that the cluster structure found by k-means is highly stable and predictable from the input features. This validates that the clusters represent genuinely distinct segments rather than random partitions.
 
+#### Calinski-Harabasz Index(Cluster internal assessment)
+```{r}
+library(fpc)
+# calculate CH index
+ch <- calinhara(data_kmeans_scaled, km$cluster, cn = 2)
+cat("Calinski-Harabasz Index:", ch, "\n")
+
+# compare CH index under different k values
+ch_values <- sapply(1:10, function(k) {
+  km_temp <- kmeans(data_kmeans_scaled, k, nstart = 20)
+  ch <- calinhara(data_kmeans_scaled, km$cluster, cn = k)
+})
+plot(1:10, ch_values, type = "b", xlab = "k", ylab = "CH Index", main = "CH Index under different K values")
+```
+Calculating the CH index for this k-means model. The principle is to calculate the ratio of the variance between clusters to the variance within clusters. The larger the value, the greater the difference between clusters and the more compact the clusters within.
+The result obtained here is 4531, which is a quite large value, indicating that the clustering result is quite good.
+Then I compared the CH index under different k values. As can be seen from the graph, when k = 2, the CH index is the largest, which once again confirms the same result as the elbow principle - when the number of clusters is 2, it is the most suitable.
+
+### Bootstrap sampling verification(Cluster stability assessment)
+```{r}
+library(fpc)
+set.seed(123)
+stab <- clusterboot(data_kmeans_scaled, 
+                    clustermethod = kmeansCBI, 
+                    k = 2, 
+                    runs = 100, 
+                    seed = 123)
+print(stab$bootmean)
+print(stab$bootbrd)  
+```
+In the bootstrap sampling verification, this model achieved excellent results with bootmean = 0.994, 0.995 and bootbrd = 0, 0. This indicates that this K-means model has extremely strong clustering stability.
+The value of bootmean is extremely close to 1, indicating that the two clusters can be consistently reproduced in over 99% of the samples, and there is almost no "false clusters caused by sampling randomness". 
+"bootbrd" represents the ambiguity of the cluster boundary. The smaller the value, the clearer the cluster boundary. This model has reached the theoretical minimum value. The boundaries of the two clusters are almost completely clear. These two clusters are genuine structures in the data, and not the result of arbitrary division by the clustering algorithm.
+
+For a better understanding, this is the result of PCA dimensionality reduction visualization.
+```{r}
+cluster_factor <- factor(km$cluster, levels = c(1, 2), labels = c("Cluster 1", "Cluster 2"))
+library(FactoMineR)
+library(factoextra)
+library(ggplot2)
+pca <- PCA(data_kmeans_scaled, graph = FALSE)
+fviz_pca_ind(
+  pca, 
+  geom.ind = "point", 
+  col.ind = cluster_factor,
+  palette = c("#2E9FDF", "#E7B800"),
+  legend.title = "Cluster",
+  title = "PCA Visualization Result",
+  xlab = "PC1", 
+  ylab = "PC2",
+  repel = TRUE
+) + 
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+We can see two clusters can be observed to be almost completely separated along the PC1 axis (with only a very small amount of overlap near PC1 = 0)
+
+### Parallel Coordinate Plot(Visual verification)
+```{r}
+library(GGally)
+plot_data <- cbind(data_kmeans_scaled, cluster = factor(km$cluster))
+ggparcoord(plot_data, 
+           columns = 1:4, 
+           groupColumn = "cluster",
+           scale = "globalminmax",
+           alphaLines = 0.5) +
+  labs(title = "Cluster distribution of each feature") +
+  theme_minimal()
+```
+This parallel coordinate plot illustrates the distribution differences of the two clusters in terms of the four standardized features.
+Cluster 1 has dark tones, while Cluster 2 has light tones.
+Firstly, the dark and light color areas in the figure hardly overlap, indicating that the characteristic trajectories of the two clusters are significantly different.
+Secondly, this graph visually verifies the characteristics of the two clusters previously separated. The lines of the high-value cluster are concentrated in the area of "high loan/asset/income and low CIBIL score", while the lines of the low-value cluster are concentrated in the area of "low loan/asset/income and high CIBIL score".
+
+
+### About t-test and ANOVA test
+I think t-tests and ANOVA tests are of little significance because K-means is already used to group variables. If these testing methods are employed, the results will definitely be significant.
+
 
 ### Q: Do 1, 2, or 3 predictors (cibil credit score, annual income, and loan amount) have a better indicator on loan approval.
 
