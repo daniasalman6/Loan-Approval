@@ -791,6 +791,8 @@ chisq.test(loan_df$loan_status, loan_df$loan_amount)
 
 These tests see if two variables are significantly associated with each other. These Chi-squared test on the three variable, CIBIL credit score, annual income, and loan amount, indicate that the CIBIL credit score was the only variable with a  p-value lower than the standard significance of .05, the p-value being 2.2e-16. This means we reject the null hypothesis that that CIBIL score and loan approval are independent and have no relationship and that the CIBIL credit score is dependent on the loan status.  We fail to reject the null hypotheses for annual income and loan amount compared to loan status, as both p-values are greater than .05, the annual income p-value being .6853, and the loan amount p-value being .8637. This means that the annual income and loan approval are independent and that loan amount and loan approval are independent.
 
+Now we will conduct logistical regression with three different models and evaluate them to see which is most effective and precise.
+
 ```{r}
 library(regclass)
 library(ResourceSelection)
