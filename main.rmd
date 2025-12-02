@@ -625,12 +625,12 @@ print(paste("Accuracy:", accuracy))
 ```
 We trained a Support Vector Machine to classify observations into the two k-means clusters. The model achieved an accuracy of 99.65%, with only 3 misclassifications out of 847 test observations. The confusion matrix shows very strong separation between the clusters, indicating that the cluster structure found by k-means is highly stable and predictable from the input features. This validates that the clusters represent genuinely distinct segments rather than random partitions.
 
-## References
 
-Do 1, 2, or 3 predictors (cibil credit score, annual income, and loan amount) have a better indicator on loan approval.
+### Q: Do 1, 2, or 3 predictors (cibil credit score, annual income, and loan amount) have a better indicator on loan approval.
 
-Null Hypothesis: H0 = All three models are equally effective indicators, or the simplest model is the best since it factors in adding more variables (AIC1≈AIC2≈AIC3)  
-Alternative Hypothesis: HA= the model with the minimum AIC is the best indicator, demonstrating a statistically superior balance of fit and model simplicity compared to the other two.
+- Null Hypothesis: H0 = All three models are equally effective indicators, or the simplest model is the best since it factors in adding more variables (AIC1≈AIC2≈AIC3)
+
+- Alternative Hypothesis: HA= the model with the minimum AIC is the best indicator, demonstrating a statistically superior balance of fit and model simplicity compared to the other two.
 
 First let us run Chi-squared tests to determine dependence of variables.
 
@@ -706,3 +706,4 @@ All three models are highly significant to affect on loan approval, as they all 
 
 To answer the question that is posed, we reject the null hypothesis and state that Model3 with the three predictors, which include CIBIL score, annual income, and loan amount, is the best predictor and it outweighs the penalty of adding more parameters. Since M3 has the highest McFadden R^2, it shows that Model3 accounts for a slightly greater proportion of variability in loan approval status than the other models.
 
+### References
