@@ -743,24 +743,6 @@ cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
 ```
 
 ```{r}
-LogitM2 <- glm(loan_status ~ cibil_score + income_annum, data = loan_df, family = "binomial")
-summary(LogitM2)
-
-#evaluation step - confidence interval
-confint.default(LogitM2)
-
-#evaluation step - confusion matrix
-confusion_matrix(LogitM2)
-
-#evaluation step - Hosmer and Lemeshow
-hoslem.test(as.numeric(loan_df$loan_status) - 1, fitted(LogitM2))
-
-#evaluation step - McFadden R^2
-null_tLogit <- glm(loan_status ~ 1, data = loan_df, family = "binomial")
-mcFadden = 1 - logLik(LogitM2) / logLik(null_tLogit)
-cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
-```
-```{r}
 LogitM2 <- glm(loan_status ~ cibil_score + loan_term, data = loan_df, family = "binomial")
 summary(LogitM2)
 
@@ -803,8 +785,4 @@ All three models are highly significant to affect on loan approval, as they all 
 
 To answer the question that is posed, we reject the null hypothesis and state that Model3 with the three predictors, which include CIBIL score, loan term, and loan amount, is the best predictor and it outweighs the penalty of adding more parameters. Since Model3 has the highest McFadden R^2, lowest AIC, and variables being significant, it shows that Model3 accounts for a slightly greater proportion of variability in loan approval status than the other models.
 
-```{r}
-glm(loan_status ~ cibil_score * loan_amount + loan_term)
-glm(loan_status ~ cibil_score * loan_term + loan_amount)
-glm(loan_status ~ loan_amount * loan_term + cibil_score)
-```
+### References
