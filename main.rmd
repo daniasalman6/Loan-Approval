@@ -23,19 +23,20 @@ output:
 library(ezids)
 library(dplyr) 
 library(tidyr)
-# knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 #knitr::opts_chunk$set(warning = F, results="hide", message = F)
-knitr::opts_chunk$set(warning = F, message = F)
+#knitr::opts_chunk$set(warning = F, message = F)
 options(scientific=T, digits = 3) 
 # options(scipen=9, digits = 3) 
 # ‘scipen’: integer. A penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferred unless it is more than ‘scipen’ digits wider.
 # use scipen=999 to prevent scientific notation at all times
 ```
-## Abstract
-With increasing economic challenges and daily financial demands, the demand for loans continues to rise. Financial institutions receive a large number of loan applications each day, making it difficult to manage them, particularly when evaluations are done manually and there are no reliable methods to assess a candidate’s creditworthiness [@Mnkandla2024Loan]. To simplify the process for both applicants and financial institutions, it is essential to develop robust evaluation methods that can accurately predict a loan applicant’s creditworthiness while minimizing risks for lenders. To achieve this, we have decided to explore an existing dataset to identify patterns across various features of loan applicants and determine which factors have the greatest impact on loan approvals. Once these key features are identified, predictive models can be built around them, reducing the need for manual evaluation and enabling data-driven decision-making based on actual application data.
-
 ## Introduction
-To investigate the factors that influence loan decisions, we obtained a dataset from Kaggle [@sharma2023loan] containing various variables for each loan application, such as income, education, CIBIL score, and the final loan status (Approved or Rejected). Our goal is to examine whether each of these variables has any impact on the loan decision. We have formulated around 10 smart questions that explore the potential effect of each variable on the final outcome. The insights gained from this exploratory analysis will guide the development of predictive models capable of accurately determining whether a loan should be approved for a given applicant.
+Loan applications continue to rise, creating a growing need for efficient and reliable methods to assess creditworthiness [@Mnkandla2024Loan]. Manual evaluation is slow and inconsistent, so data-driven approaches are essential to support accurate lending decisions [@Anon2025DataDrivenLoanApproval]. To investigate factors influencing loan approval, we use a Kaggle dataset [@sharma2023loan] containing financial and demographic features such as income, employment, asset values, CIBIL score, and loan status. Our exploratory analysis examines how these variables relate to approval outcomes and highlights the most influential features.
+
+Prior research shows that borrowers naturally form clusters based on income, credit history, employment, and demographic attributes (@Wu2018Customer). Motivated by this work, our first modeling question asks whether financial segments exist in this dataset and whether these segments show different loan approval patterns that help explain borrower behaviour. Lenders typically rely on a small set of core indicators such as credit score, income, and loan amount because these variables capture repayment history, repayment capacity, and exposure, and are strong predictors of underwriting decisions and borrower risk (@Bhardwaj2015Credit). Our second modeling question evaluates which combination of these predictors provides the best balance of predictive accuracy and model simplicity.
+
+Together, the exploratory and modeling analyses provide insight into borrower characteristics, identify distinct financial segments, and support more informed, data-driven loan evaluation decisions.
 
 ### Loading the Dataset
 ```{r read_dataset, echo=TRUE}
@@ -478,20 +479,9 @@ t.test(loan_term ~ loan_status, data = loan_df, tail="greater")
 #### Conclusion
 The two-sample t-test indicates a significant difference in means (`p < 0.05`) so we can reject the null hypothesis, with approved loans having a shorter average term (`10.4 years`) than rejected loans (`11.7 years`). The `95%` confidence interval for the mean difference is `-1.67 to -0.988` (the interval doesn't have 0), confirming that approved loans tend to have shorter terms.
 
-## Overall Findings and Future Work
-The exploratory data analysis and hypothesis testing conducted in this study provide several key insights into the factors influencing loan approval outcomes. The results indicate that **CIBIL score** serves as a significant determinant of approval decisions, with approved applicants demonstrating notably higher average scores than rejected ones. This reinforces the importance of an applicant’s creditworthiness in lending assessments. Additionally, the analysis revealed that **loan term** plays a critical role, as approved loans tend to have **shorter durations**, suggesting that lenders may prefer applicants seeking lower-risk, shorter-term loans.
-
-While **annual income** exhibited a strong positive correlation with the **loan amount requested**, it did not display a significant direct relationship with loan approval status. This finding implies that although applicants with higher incomes tend to request larger loans, income alone may not substantially affect the likelihood of approval once other financial indicators are considered. Thus, **CIBIL score** and **loan term** emerge as the most impactful variables for understanding and predicting loan approval decisions, whereas **annual income** may serve as a supporting predictor variable rather than a primary determinant.
-
-In contrast, variables such as **assets value**, **loan amount requested**, and **employment status** did **not exhibit a notable impact** on loan approval outcomes during this exploratory phase. While these features may still add some background information, they appear to play a limited role in influencing the approval decision compared to credit and term-related variables.
-
-Future work should focus on developing **predictive models** to validate these findings and quantify the relative influence of key variables. Variables such as CIBIL score, loan term, and annual income can be incorporated into classification models such as linear and logistic regression to predict loan approval outcomes. 
-
-Overall, this study establishes a foundational understanding of the most influential factors affecting loan approval and provides a data-driven basis for future modeling in credit risk evaluation.
-
 ## Data Modeling
 
-### Q: Can we segment borrowers into distinct groups based on their financial profiles to better understand different applicant types?
+### Q: Do different financial segments show different loan approval patterns, and can these segments help explain which types of borrowers are more likely to be approved or rejected?
 
 #### Filtering numeric columns
 ```{r echo=TRUE}
@@ -499,7 +489,7 @@ data_kmeans <- loan_df[, c("income_annum", "loan_amount", "cibil_score", "reside
 cor(data_kmeans)
 ```
 
-The correlation matrix shows that all asset variables are positively and strongly related, so I combined them into a single total asset value to avoid redundancy.
+The correlation matrix shows that all asset variables are **positively and strongly related**, so I combined them into a single total asset value to avoid redundancy.
 
 ```{r echo=TRUE}
 str(loan_df)
@@ -511,13 +501,18 @@ loan_df$combined_asset_value <- rowSums(
   na.rm = TRUE
 )
 
-data_kmeans <- loan_df[, c("loan_amount", "combined_asset_value", "cibil_score", "income_annum")]
+data_kmeans <- loan_df[, c("loan_amount", "combined_asset_value", "cibil_score", "income_annum", "loan_status")]
 str(data_kmeans)
 ```
 
 #### Scaling data
 ```{r echo=TRUE}
-data_kmeans_scaled <- scale(data_kmeans)
+data_kmeans_scaled <- scale(
+  data_kmeans[, colnames(data_kmeans) != "loan_status"]
+)
+
+# this version returns a matrix, so convert to data frame if needed
+data_kmeans_scaled <- as.data.frame(data_kmeans_scaled)
 ```
 
 #### Deciding on optimal number of clusters using elbow plot
@@ -542,20 +537,9 @@ k <- 2
 km <- kmeans(data_kmeans_scaled, centers = k, nstart = 25)
 ```
 
-
-#### Calculating silhouette score of the cluster
-```{r echo=TRUE}
-library(cluster)
-
-sil <- silhouette(km$cluster, dist(data_kmeans_scaled))
-mean(sil[, 3])  
-```
-
-The silhouette score of 0.423 indicates that the two borrower clusters are reasonably well-separated, meaning the clustering has captured meaningful differences in income, assets, loan amount, and CIBIL score. While the groups are not perfectly distinct, the separation is strong enough to provide useful insights into different borrower profiles.
-
 #### Creating cluster profiles
 
-Attaching cluster labels to both the scaled and original datasets, then calculating the average unscaled feature values for each cluster to create interpretable cluster profiles.
+Attaching **cluster labels** to both the scaled and original datasets, then calculating the average unscaled feature values for each cluster to create interpretable cluster profiles.
 
 ```{r echo=TRUE}
 # df_scaled already contains cluster labels
@@ -588,43 +572,6 @@ print(cluster_profiles_unscaled)
 
 - **Cluster 2: Moderate-value borrowers:** This cluster consists of moderate-income, moderate-asset borrowers who apply for smaller loans and have slightly better credit scores. Their financial profile is less substantial than Cluster 1, but their stronger CIBIL scores might indicate better repayment discipline.
 
-These differences suggest that the clustering effectively separates borrowers based on financial strength and borrowing patterns.
-
-#### SVM classification to validate cluster separability
-
-```{r echo=TRUE}
-library(caret)
-library(e1071)
-
-# Combine original features with cluster labels
-cluster_data <- df_unscaled   # df_unscaled already includes: loan_amount, combined_asset_value, cibil_score, income_annum, cluster
-
-set.seed(123)
-
-# 80/20 train-test split (stratified by cluster)
-index <- createDataPartition(cluster_data$cluster, p = 0.8, list = FALSE)
-train_data <- cluster_data[index, ]
-test_data  <- cluster_data[-index, ]
-
-table(cluster_data$cluster)    # Check class balance
-
-svm_model <- svm(
-  cluster ~ loan_amount + combined_asset_value + cibil_score + income_annum,
-  data = train_data,
-  kernel = "radial",
-  class.weights = table(cluster_data$cluster) / nrow(cluster_data)
-)
-
-predictions <- predict(svm_model, newdata = test_data)
-
-confusion_matrix <- table(predictions, test_data$cluster)
-print(confusion_matrix)
-
-accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
-print(paste("Accuracy:", accuracy))
-```
-We trained a Support Vector Machine to classify observations into the two k-means clusters. The model achieved an accuracy of 99.65%, with only 3 misclassifications out of 847 test observations. The confusion matrix shows very strong separation between the clusters, indicating that the cluster structure found by k-means is highly stable and predictable from the input features. This validates that the clusters represent genuinely distinct segments rather than random partitions.
-
 #### Calinski-Harabasz Index(Cluster internal assessment)
 ```{r}
 library(fpc)
@@ -639,9 +586,7 @@ ch_values <- sapply(1:10, function(k) {
 })
 plot(1:10, ch_values, type = "b", xlab = "k", ylab = "CH Index", main = "CH Index under different K values")
 ```
-Calculating the CH index for this k-means model. The principle is to calculate the ratio of the variance between clusters to the variance within clusters. The larger the value, the greater the difference between clusters and the more compact the clusters within.
-The result obtained here is 4531, which is a quite large value, indicating that the clustering result is quite good.
-Then I compared the CH index under different k values. As can be seen from the graph, when k = 2, the CH index is the largest, which once again confirms the same result as the elbow principle - when the number of clusters is 2, it is the most suitable.
+We calculated the CH index for the k-means model, which measures the ratio of **variance between clusters to variance within clusters**. Higher values indicate greater separation between clusters and more compact clustering within each group. The CH index for our model was `4531`, a relatively **large value**, suggesting that the clustering result is robust. We then evaluated the CH index across different values of `k`. As shown in the graph, the index reaches its maximum at `k=2`, consistent with the elbow method, confirming that two clusters is the most appropriate choice for this dataset.
 
 ### Bootstrap sampling verification(Cluster stability assessment)
 ```{r}
@@ -655,62 +600,32 @@ stab <- clusterboot(data_kmeans_scaled,
 print(stab$bootmean)
 print(stab$bootbrd)  
 ```
-In the bootstrap sampling verification, this model achieved excellent results with bootmean = 0.994, 0.995 and bootbrd = 0, 0. This indicates that this K-means model has extremely strong clustering stability.
-The value of bootmean is extremely close to 1, indicating that the two clusters can be consistently reproduced in over 99% of the samples, and there is almost no "false clusters caused by sampling randomness". 
-"bootbrd" represents the ambiguity of the cluster boundary. The smaller the value, the clearer the cluster boundary. This model has reached the theoretical minimum value. The boundaries of the two clusters are almost completely clear. These two clusters are genuine structures in the data, and not the result of arbitrary division by the clustering algorithm.
+In the bootstrap sampling verification, this model produced very strong results, with bootmean values of `0.994` and `0.995` and bootbrd values of `0` and `0`. These results show that the k-means solution is extremely stable. A bootmean value that is almost equal to `1` indicates that the two clusters appear consistently across more than `99 percent` of the bootstrap samples, which means the model is not creating artificial clusters due to random variation in the data. The bootbrd value measures how uncertain the cluster boundaries are. **A value of zero reflects the highest possible level of boundary clarity**. This confirms that the separation between the two clusters is almost perfectly stable and that the clusters represent **genuine patterns in the data rather than arbitrary divisions created by the algorithm**.
 
-For a better understanding, this is the result of PCA dimensionality reduction visualization.
-```{r}
-cluster_factor <- factor(km$cluster, levels = c(1, 2), labels = c("Cluster 1", "Cluster 2"))
-library(FactoMineR)
-library(factoextra)
-library(ggplot2)
-pca <- PCA(data_kmeans_scaled, graph = FALSE)
-fviz_pca_ind(
-  pca, 
-  geom.ind = "point", 
-  col.ind = cluster_factor,
-  palette = c("#2E9FDF", "#E7B800"),
-  legend.title = "Cluster",
-  title = "PCA Visualization Result",
-  xlab = "PC1", 
-  ylab = "PC2",
-  repel = TRUE
-) + 
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5))
+### Calculating Approval percentages for each cluster
+
+```{r echo=TRUE}
+approval_percentages <- df_unscaled %>%
+  group_by(cluster, loan_status) %>%
+  summarise(count = n()) %>%
+  mutate(percent = round(count / sum(count) * 100, 2)) %>%
+  arrange(cluster)
+
+approval_percentages
 ```
-We can see two clusters can be observed to be almost completely separated along the PC1 axis (with only a very small amount of overlap near PC1 = 0)
 
-### Parallel Coordinate Plot(Visual verification)
-```{r}
-library(GGally)
-plot_data <- cbind(data_kmeans_scaled, cluster = factor(km$cluster))
-ggparcoord(plot_data, 
-           columns = 1:4, 
-           groupColumn = "cluster",
-           scale = "globalminmax",
-           alphaLines = 0.5) +
-  labs(title = "Cluster distribution of each feature") +
-  theme_minimal()
-```
-This parallel coordinate plot illustrates the distribution differences of the two clusters in terms of the four standardized features.
-Cluster 1 has dark tones, while Cluster 2 has light tones.
-Firstly, the dark and light color areas in the figure hardly overlap, indicating that the characteristic trajectories of the two clusters are significantly different.
-Secondly, this graph visually verifies the characteristics of the two clusters previously separated. The lines of the high-value cluster are concentrated in the area of "high loan/asset/income and low CIBIL score", while the lines of the low-value cluster are concentrated in the area of "low loan/asset/income and high CIBIL score".
+The clustering analysis reveals two financially distinct borrower segments, but their loan approval patterns differ only slightly. Although the financial profiles of the two groups are clearly separated, their **approval rates remain similar**. The first cluster has an approval rate of `61.4 percent` while the second cluster has an approval rate of `63.1 percent`.
 
-
-### About t-test and ANOVA test
-I think t-tests and ANOVA tests are of little significance because K-means is already used to group variables. If these testing methods are employed, the results will definitely be significant.
+These results show that the **financial segmentation alone does not strongly separate borrowers by approval outcomes**. The clusters highlight meaningful differences in borrowing capacity and asset strength, but these differences do not translate into large differences in approval rates. This suggests that **lenders do not rely primarily on the combined financial structure** captured in the clusters when making decisions. The findings indicate that segmentation is useful for understanding borrower types, but it only partially explains approval behaviour. In later analysis, **CIBIL score emerges as a much stronger driver of approval**, which clarifies why the approval percentages across clusters remain close despite their financial differences.
 
 ### Q:  Which set of predictors—1, 2, or 3—provides the optimal balance of predictive power and model complexity for determining loan approval?
 
-The three variables we decided to choose are the CIBIL score, loan amount and loan term.These three would be important because they are vital for the credit risk assessment.
+The three variables we decided to choose are the `CIBIL score`, `loan amount` and `loan term`. These three would be important because they are vital for the credit risk assessment based on our EDA
 
-Null Hypothesis: H0 = All three models are equally effective indicators, or the simplest model is the best since it factors in adding more variables (AIC1≈AIC2≈AIC3)  
-Alternative Hypothesis: HA= the model with the minimum AIC is the best indicator, demonstrating a statistically superior balance of fit and model simplicity compared to the other two.
+- **Null hypothesis (H₀):** All three models are equally effective indicators, or the simplest model is the best since it factors in adding more variables `(AIC1≈AIC2≈AIC3)`  
+- **Alternate Hypothesis (H₁):** the model with the minimum AIC is the best indicator, demonstrating a statistically superior balance of fit and model simplicity compared to the other two.
 
-First let us run Chi-squared tests to determine dependence of variables.
+First let us run **Chi-squared test of independence** between predicting and target variables.
 
 ```{r}
 chisq.test(loan_df$loan_status, loan_df$cibil_score)
@@ -718,7 +633,7 @@ chisq.test(loan_df$loan_status, loan_df$loan_amount)
 chisq.test(loan_df$loan_status, loan_df$loan_term)
 ```
 
-These tests see if two variables are significantly associated with each other. These Chi-squared test on the three variable, CIBIL credit score, loan amount, and loan term, indicate that the CIBIL credit score and loan  term are the variables with a p-value lower than the standard significance of .05, both having a p-value being 2.2e-16. This means we reject the null hypothesis that that CIBIL score and loan approval are independent and have no relationship. This means that the CIBIL credit score is dependent on the loan status and that the loan term is significantly associated with the loan status.  We fail to reject the null hypotheses for the loan amount compared to loan status, as the p-values is greater than .05. The loan amount p-value being .8637. This means that the loan amount and loan approval are independent from each other.
+These Chi-squared tests on the three variables, `CIBIL score`, `loan amount`, and `loan term`, indicate that the CIBIL score and loan term are the variables with a low p-value (2.2e-16). This means we reject the null hypothesis that that CIBIL score and loan approval are independent and have no relationship. This means that the **CIBIL score is dependent on the loan status** and that the **loan term is significantly associated with the loan status**. We fail to reject the null hypotheses for the loan amount compared to loan status, as the p-values is greater than .05. The loan amount p-value being .8637. This means that the **loan amount and loan approval are independent from each other**.
 
 ```{r}
 library(regclass)
@@ -781,8 +696,15 @@ cat("McFadden R-squared: ", format(mcFadden, digits=3), "\n")
 ```
   
 
-All three models are highly significant to affect on loan approval, as they all have p-values less than the standard level of statistical significance of .05. Model 1, or M1, uses CIBIL Score only. Model 2, or M2, is model 1 with loan term added. Model 3, or M3, is M2 with loan amount added. M1 has an R-squared value of .623, an AIC score of 2126,  a Hosmer and Lemeshow X-squared value of 623 with a p-value of 2e-16. The accuracy on M1 is 91.77%. M2 has an R-squared value of .659, an AIC score of 1925, and a Hosmer and Lemeshow X-squared value of 182 with a p-value of 2e-16. The accuracy on M2 is 91.56%. M3 has an R-squared value of .660, an AIC score of 2126,  and a Hosmer and Lemeshow X-squared value of 181 with a p-value of 2e-16. The accuracy on M3 is 91.63%.
+All three models are highly significant to affect on loan approval, as they all have low p-vaues. `M1`, uses `CIBIL Score` only. `M2` uses `CIBIL score + loan term`. `M3` uses `CIBIL score + loan term + loan_amount`. `M1` has an **R-squared** value of `.623`, an **AIC score** of `2126`,  a **Hosmer and Lemeshow X-squared value** of `623` with a **p-value** of `2e-16`. The **accuracy** on `M1` is `91.77%`. `M2` has an **R-squared** value of `.659`, an **AIC score** of `1925`, and a **Hosmer and Lemeshow X-squared value** of `182` with a **p-value** of `2e-16`. The **accuracy** on `M2` is `91.56%`. `M3` has an **R-squared** value of `.660`, an **AIC score** of `2126`,  and a **Hosmer and Lemeshow X-squared value** of `181` with a **p-value** of `2e-16`. The **accuracy** on `M3` is `91.63%`.
 
-M1 was the best performing given the data set. This is due to the fact that it only uses one predictor. The simplest model is less prone to overfitting and makes the data easier to interpret.  The accuracy is the highest vallue as well and the R^2 is marginal. The change of less than 4 percentage points in varaince explained may not justify the added complexity and data requirements. It is not worth adding additional features, we used log reg because the final result (loan approval) is a binary categorical variable, EDA showed cibil score and loan term had strongest relationship with approval so we used those in the log reg models.  To answer the question that is posed, we reject the null hypothesis and state that Model1 with just the CIBIL score is the best predictor.
+**M1 was the best performing** given the data set. This is due to the fact that it only uses **one predictor**. The simplest model is less prone to overfitting and makes the data easier to interpret.  The accuracy is the highest value as well and the R^2 is marginal. The change of less than 4 percentage points in varaince explained may not justify the added complexity and data requirements. It is not worth adding additional features, we used log reg because the final result (loan approval) is a binary categorical variable, EDA showed cibil score and loan term had strongest relationship with approval so we used those in the log reg models.  To answer the question that is posed, we reject the null hypothesis and state that **Model1 with just the CIBIL score is the best predictor**.
+
+## Overall Findings and Future Work
+This study integrated exploratory data analysis and predictive modeling to examine factors influencing loan approval. **The analysis consistently highlights CIBIL score as the primary determinant**, with **loan term also playing a supporting role**. Financial segmentation and other features such as income, assets, and requested loan amount provide additional context but are less critical in driving approval decisions.
+
+The combined insights from clustering and logistic regression confirm that while borrower profiles differ in financial strength, **approval decisions are largely guided by creditworthiness rather than overall asset or income level**. This highlights the value of data-driven approaches in identifying the most meaningful predictors and supporting consistent, objective lending decisions.
+
+Future work can expand on these findings by exploring more sophisticated predictive models, incorporating behavioral or temporal data, and testing whether additional features can improve prediction beyond the dominant effect of CIBIL score.
 
 ### References
